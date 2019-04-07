@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% extends 'Manager/homebase.html'%}
+{%load staticfiles%}
+<link rel="stylesheet" href="{%static 'css/home.css' %}">
+
+{% load crispy_forms_tags %}
+
+
+
+{% block homeblock%}
+
+<div class="container">
+
+<h1> Available Tournments are </h1> <br>
+
+
+
+                    {% if tournment %}
+                       <table border="2">
+                           <thead>
+                           <th> Tournment Name </th>
+                           <th> Tournment Venue </th>
+                           <th> Start Date </th>
+                           <th> End Date </th>
+                           <th> Registration Fee</th>
+                           <th> Actions</th>
+                           </thead>
+                           {% for t in tournment%}
+                           <tr>
+                               <td style="width:100px">{{t.t_name}} </td>
+                               <td>{{t.t_venue}} </td>
+                               <td>{{t.s_date}} </td>
+                               <td>{{t.e_date}} </td>
+                               <td>{{t.r_fee}} </td>
+                              <td> <a href=""> Register</a> </td>
+
+
+                            </tr>
+                           {%endfor%}
+                       </table>
+                    {% else %}
+                    <p> No Tournments Available</p>
+                    {% endif%}
+
+</div>
+
+{%endblock%}
