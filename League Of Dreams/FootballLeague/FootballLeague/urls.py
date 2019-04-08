@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^admpg', views.load_admin_view),
     url(r'^tournmentadd', views.addtournment_view),
     url(r'^showtour', views.show_tournments_view),
+    url(r'^myteam', views.view_team),
 ]
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

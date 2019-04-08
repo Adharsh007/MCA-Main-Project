@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+{% extends 'Manager/homebase.html'%}
+{%load staticfiles%}
+<link rel="stylesheet" href="{%static 'css/home.css' %}">
+
+{% load crispy_forms_tags %}
+
+
+
+{% block homeblock%}
+
+
+
+<div class="container">
+
+<h1> Team list </h1> <br>
+
+{% if dict %}
+    <table id="t1" border="2">
+        <thead>
+     <!--   <th> Team Name</th>
+        <th> Team Logo</th>  -->
+        <th> First Name</th>
+        <th> Last Name</th>
+        <th> Age</th>
+        <th> Contact Number</th>
+        <th> Jersey Number</th>
+        <th> Position</th>
+        <th>Action</th>
+
+        </thead>
+        {%for d in dict%}
+        <tr>
+
+            <td> {{d.first_name}} </td>
+            <td> {{d.last_name}} </td>
+            <td> {{d.age}} </td>
+            <td> {{d.contact_no}} </td>
+            <td>{{d.jersy_no}} </td>
+            <td> {{d.position}} </td>
+            <td> <a href="#"> Update <a href="#">Delete</a></td>
+
+          </tr>
+          {% endfor %}
+        </table>
+
+        {%else%}
+          <p>No data</p>
+          {%endif%}
+
+
+</div>
+{%endblock%}

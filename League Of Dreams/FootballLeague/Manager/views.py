@@ -4,6 +4,7 @@ from django.shortcuts import redirect
 from django.contrib.auth import authenticate
 from django.http import HttpResponse
 from Manager.models import AddTournments
+from django.db import connection
 
 # Create your views here.
 
@@ -45,6 +46,7 @@ def home_view(request):
         un = request.POST.get('uname')
         pw = request.POST.get('pwd')
         user = authenticate(request, username=un, password=pw)
+        request.session['loginid'] = user.id
         print(user)
 
         if user:
@@ -99,3 +101,40 @@ def addtournment_view(request):
 def show_tournments_view(request):
     tournment = AddTournments.objects.all()
     return render(request,'Manager/showtour.html',{'tournment':tournment})
+
+
+
+def dictfetchall(cursor):
+    """Return all rows from a cursor as a dict"""
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
+
+
+#view team
+def view_team(request):
+    x = (request.session.get('loginid'))
+    print(x)
+
+    cursor = connection.cursor()
+    cursor.execute("""
+    SELECT
+    Manager_addplayer.*
+    FROM
+    auth_user left outer join  Manager_addteam
+    ON
+    (auth_user.id=Manager_addteam.username_id)
+    left outer JOIN Manager_addplayer
+    on
+    (Manager_addplayer.team_name_id = Manager_addteam.id)
+    WHERE auth_user.id = %d"""%(x))
+
+    dict = {}
+    dict = dictfetchall(cursor)
+    print(dict)
+    context = {
+        'dict': dict
+    }
+    return render(request, 'manager/myteam.html', context)
