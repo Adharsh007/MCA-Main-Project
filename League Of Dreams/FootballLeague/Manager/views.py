@@ -3,7 +3,7 @@ from Manager.forms import SignUpForm,UserProfileForm,AddTeamForm,AddPlayerForm,A
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate
 from django.http import HttpResponse
-from Manager.models import AddTournments
+from Manager.models import AddTournments,AddPlayer
 from django.db import connection
 
 # Create your views here.
@@ -32,13 +32,6 @@ def signup_view(request):
 def login_view(request):
     return render(request,'Manager/login.html')
 
-#to check login
-""" def login_check(request):
-    un = request.POST['uname']
-    pw = request.POST['pwd']
-    user = authenticate(request, username=un, password=pw)
-    if user:
-        return render(request,'Manager/home.html') """
 
 #to check login and  display home page
 def home_view(request):
@@ -138,3 +131,13 @@ def view_team(request):
         'dict': dict
     }
     return render(request, 'manager/myteam.html', context)
+
+#To delete Player from list
+def  delete_view(request,id):
+    player_id = AddPlayer.objects.get(id=id)
+    player_id.delete()
+    return redirect('/myteam')
+
+#to make payment for a tournment
+def makepayment_view(request):
+    return render(request,'Manager/payment.html')

@@ -132,3 +132,8 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+PAYMENT_VARIANTS = {
+    'razorpay': ('django_payments_razorpay.RazorPayProvider', {
+        'public_key': 'RAZORPAY_PUBLIC_KEY',
+        'secret_key': 'RAZORPAY_SECRET_KEY'})}

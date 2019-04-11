@@ -31,6 +31,10 @@ urlpatterns = [
     url(r'^tournmentadd', views.addtournment_view),
     url(r'^showtour', views.show_tournments_view),
     url(r'^myteam', views.view_team),
+    url(r'^delete/(?P<id>\d+)/$', views.delete_view),
+    url(r'^payment', views.makepayment_view),
+
+
 ]
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

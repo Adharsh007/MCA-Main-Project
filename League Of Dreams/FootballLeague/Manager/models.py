@@ -16,7 +16,7 @@ class UserProfile(models.Model):
 #Model used to register team
 class AddTeam(models.Model):
     team_name = models.CharField(max_length=40)
-    username = models.ForeignKey(User)
+    username = models.ForeignKey(User,on_delete=models.CASCADE)
     address = models.TextField()
     contact_no = models.IntegerField()
     team_logo = models.ImageField(upload_to='teams_logo/')
@@ -29,7 +29,7 @@ class AddPlayer(models.Model):
     POSITION_CHOICES = (('Striker','Striker'),('MidFielder','MidFielder'),('Defender','Defender'),('GoalKeeper','GoalKeeper'))
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
-    team_name = models.ForeignKey(AddTeam)
+    team_name = models.ForeignKey(AddTeam,on_delete=models.CASCADE)
     age = models.IntegerField()
     contact_no = models.IntegerField()
     address = models.TextField()
