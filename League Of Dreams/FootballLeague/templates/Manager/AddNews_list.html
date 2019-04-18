@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+{% extends 'Manager/indexbase.html'%}
+{%load staticfiles%}
+
+
+
+{% block indexblock%}
+
+<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+
+<div class="container">
+    {% for mynews in AddNews_list%}
+      <h2>{{mynews.created}}</h2>
+      <a href="/{{mynews.id}}">  <img src="{{mynews.news_image.url}}"> </a>
+      <h2> <a href="/{{mynews.id}}"> {{mynews.news_head | truncatewords:10 }}</a> </h2> <br>
+      {% endfor %}
+</div>
+
+
+{%endblock%}

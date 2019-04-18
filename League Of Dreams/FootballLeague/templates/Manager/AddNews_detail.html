@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+{% extends 'Manager/indexbase.html'%}
+
+{%load staticfiles%}
+
+{% block indexblock%}
+
+<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+
+<div class="container">
+    <h1>{{mynews.news_head}}</h1>
+    <img src="{{mynews.news_image.url}}">
+    <p>{{mynews.body}}</p>
+</div>
+
+
+{%endblock%}

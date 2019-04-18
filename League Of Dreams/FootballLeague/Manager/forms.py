@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from Manager.models import UserProfile,AddTeam,AddPlayer,AddTournments
+from Manager.models import UserProfile,AddTeam,AddPlayer,AddTournments,AddNews
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -54,19 +54,32 @@ class AddPlayerForm(forms.ModelForm):
                 "address": "Address",
                 "jersy_no": "jersy Number",
                 "position": "Playing Position",
-                "upload_photo" : "Uplaod Photo"
+                "upload_photo" : "Upload Photo"
 
 }
 
 class AddTournmentsForm(forms.ModelForm):
     class Meta:
         model = AddTournments
-        fields = ['t_name','t_venue','s_date','e_date','r_fee']
+        fields = ['t_name','t_venue','s_date','e_date','r_fee','is_registred']
         labels = {
 
             "t_name": "Tournment Name",
             "t_venue": "Tournment Venue",
             "s_date": "Start Date",
             "e_date": "End Date",
-            "r_fee": "Registration Fee"
+            "r_fee": "Registration Fee",
+            "is_registred": "Registred?"
+        }
+
+class AddNewsForm(forms.ModelForm):
+    class Meta:
+        model = AddNews
+        fields= ['news_image','news_head','body']
+        labels = {
+
+            "news_image": "Upload Image",
+            "news_head": "Headline",
+            "body": "News Body",
+
         }

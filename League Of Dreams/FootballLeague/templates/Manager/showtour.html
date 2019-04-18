@@ -23,6 +23,7 @@
                            <th> Start Date </th>
                            <th> End Date </th>
                            <th> Registration Fee</th>
+                           <th> Is Registred?</th>
                            <th> Actions</th>
                            </thead>
                            {% for t in tournment%}
@@ -32,7 +33,8 @@
                                <td>{{t.s_date}} </td>
                                <td>{{t.e_date}} </td>
                                <td>{{t.r_fee}} </td>
-                              <td> <a href="/payment"> Register</a> </td>
+                               <td> {{t.is_registred|yesno:"Yes,No"}}</td>
+                              <td> <a href="/payment"> Make Payment</a> </td>
 
 
                             </tr>

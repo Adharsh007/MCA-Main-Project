@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from Manager.forms import SignUpForm,UserProfileForm,AddTeamForm,AddPlayerForm,AddTournmentsForm
+from Manager.forms import SignUpForm,UserProfileForm,AddTeamForm,AddPlayerForm,AddTournmentsForm,AddNewsForm
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate
 from django.http import HttpResponse
-from Manager.models import AddTournments,AddPlayer
+from Manager.models import AddTournments,AddPlayer,AddNews
 from django.db import connection
+from django.views.generic import ListView,DetailView
 
 # Create your views here.
 
@@ -89,6 +90,28 @@ def addtournment_view(request):
             addtourform.save()
             return redirect('/admpg')
     return render(request,'Manager/addtournment.html',{'addtourform':addtourform})
+
+#To add news from the admin side
+def addnews_view(request):
+    newsform = AddNewsForm()
+    if request.method == 'POST':
+        newsform = AddNewsForm(request.POST, request.FILES)
+        if newsform.is_valid():
+            newsform.save()
+            return redirect('/admpg')
+    return render(request,'Manager/addnews.html',{'newsform':newsform})
+
+#list the news
+class NewsList(ListView):
+    model = AddNews
+    context_object_name = 'AddNews_list'
+
+#detail news list
+class NewsDetail(DetailView):
+    model= AddNews
+    context_object_name = 'mynews'
+
+
 
 
 def show_tournments_view(request):

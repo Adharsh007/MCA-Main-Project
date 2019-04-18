@@ -47,6 +47,22 @@ class AddTournments(models.Model):
     s_date = models.DateTimeField(default=timezone.now)
     e_date = models.DateTimeField(default=timezone.now)
     r_fee = models.IntegerField()
+    is_registred = models.BooleanField(default=False)
 
     def __str__(self):
         return self.t_name
+
+#model for adding news from admin
+class AddNews(models.Model):
+    news_image = models.ImageField(upload_to='news/')
+    news_head = models.CharField(max_length=150)
+    body = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ('-created',)
+
+    def __str__(self):
+        return self.news_head

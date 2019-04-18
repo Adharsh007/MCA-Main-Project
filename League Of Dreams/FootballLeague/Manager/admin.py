@@ -1,5 +1,5 @@
 from django.contrib import admin
-from Manager.models import UserProfile,AddTeam,AddPlayer,AddTournments
+from Manager.models import UserProfile,AddTeam,AddPlayer,AddTournments,AddNews
 
 # Register your models here.
 class UserProfileAdmin(admin.ModelAdmin):
@@ -15,5 +15,9 @@ class AddPlayerAdmin(admin.ModelAdmin):
 admin.site.register(AddPlayer,AddPlayerAdmin)
 
 class AddTournmentsAdmin(admin.ModelAdmin):
-    list_display = ['t_name','t_venue','s_date','e_date','r_fee']
+    list_display = ['t_name','t_venue','s_date','e_date','r_fee','is_registred']
 admin.site.register(AddTournments,AddTournmentsAdmin)
+
+class AddNewsAdmin(admin.ModelAdmin):
+    list_display = ['news_image','news_head','body','created','updated','active']
+admin.site.register(AddNews,AddNewsAdmin)
