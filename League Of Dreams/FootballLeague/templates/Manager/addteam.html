@@ -25,9 +25,41 @@
 
                         <form enctype="multipart/form-data" method="post" autocomplete="off" >
                             {%csrf_token%}
-                            {{teamform|crispy}}
-                            <input type="submit" class="btn btn-primary" value="Register">
-                        </form>
+
+                            <div class="form-row">
+                                  <div class="form-group col-md-8 mb-0">
+                                    {{ teamform.team_name|as_crispy_field }}
+                                  </div>
+                                  <div class="form-group col-md-4 mb-0">
+                                    {{ teamform.username|as_crispy_field }}
+                                  </div>
+                              </div>
+                              
+
+                                <div class="form-row">
+                                      <div class="form-group col-md-12 mb-0">
+                                        {{ teamform.address|as_crispy_field }}
+                                      </div>
+                                  </div>
+
+                                  <div class="form-row">
+                                        <div class="form-group col-md-12 mb-0">
+                                          {{ teamform.contact_no|as_crispy_field }}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                          <div class="form-group col-md-12 mb-0">
+                                            {{ teamform.team_logo|as_crispy_field }}
+                                          </div>
+                                      </div>
+
+                                      <div class="form-row">
+                                            <div class="form-group col-md-12 mb-0">
+                                              <input type="submit" class="btn btn-primary" value="Register">
+                                            </div>
+                                        </div>
+                              </form>
 
 
 

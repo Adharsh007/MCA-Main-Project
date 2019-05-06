@@ -25,8 +25,58 @@
 
                         <form enctype="multipart/form-data" method="post" autocomplete="off" >
                             {%csrf_token%}
-                            {{player|crispy}}
-                            <input type="submit" class="btn btn-primary" value="ADD">
+                          <!--  {{player|crispy}} -->
+                      <div class="form-row">
+                          <div class="form-group col-md-6 mb-0">
+                                    {{ player.first_name|as_crispy_field }}
+                                  </div>
+                                  <div class="form-group col-md-6 mb-0">
+                                    {{ player.last_name|as_crispy_field }}
+                                  </div>
+                              </div>
+                      <div class="form-row">
+                                  <div class="form-group col-md-6 mb-0">
+                                            {{ player.team_name|as_crispy_field }}
+                                          </div>
+                                          <div class="form-group col-md-6 mb-0">
+                                            {{ player.contact_no|as_crispy_field }}
+                                          </div>
+                                      </div>
+
+                                      <div class="form-row">
+                                                  <div class="form-group col-md-4 mb-0">
+                                                            {{ player.age|as_crispy_field }}
+                                                          </div>
+                                                          <div class="form-group col-md-4 mb-0">
+                                                            {{ player.jersy_no|as_crispy_field }}
+                                                          </div>
+                                                          <div class="form-group col-md-4 mb-0">
+                                                            {{ player.position|as_crispy_field }}
+                                                          </div>
+                                                      </div>
+
+                                      <div class="form-row">
+                                                    <div class="form-group col-md-12 mb-0">
+                                                          {{ player.address|as_crispy_field }}
+                                                    </div>
+                                      </div>
+
+                                      <div class="form-row">
+
+                                                  <div class="form-group col-md-12 mb-0">
+                                                      {{ player.upload_photo|as_crispy_field }}
+                                                  </div>
+                                        </div>
+
+
+
+
+                                        <div class="form-row">
+                                              <div class="form-group col-md-12 mb-0">
+                                                <input type="submit" class="btn btn-primary" value="ADD">
+                                              </div>
+                                          </div>
+
                         </form>
 
 

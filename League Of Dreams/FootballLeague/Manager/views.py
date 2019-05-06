@@ -1,11 +1,12 @@
 from django.shortcuts import render
-from Manager.forms import SignUpForm,UserProfileForm,AddTeamForm,AddPlayerForm,AddTournmentsForm,AddNewsForm
+from Manager.forms import *
 from django.shortcuts import redirect
 from django.contrib.auth import authenticate
 from django.http import HttpResponse
-from Manager.models import AddTournments,AddPlayer,AddNews
+from Manager.models import *
 from django.db import connection
 from django.views.generic import ListView,DetailView
+from Manager import config
 
 # Create your views here.
 
@@ -40,13 +41,21 @@ def home_view(request):
         un = request.POST.get('uname')
         pw = request.POST.get('pwd')
         user = authenticate(request, username=un, password=pw)
+        config.userid = user.id
+        user_obj = User.objects.get(id=config.userid)
+        print("inside home view")
+        print(config.userid)
+        print(user_obj)
         request.session['loginid'] = user.id
-        print(user)
+
 
         if user:
             if user.is_superuser == 1 and user.is_staff ==1:
                 return render(request,'Manager/adminpage.html')
             elif user:
+                #need
+                #team_obj = AddTeam.objects.get(username=user_obj)
+                #config.teamid = team_obj.id
                 return render(request, 'Manager/home.html')
             else:
                 return HttpResponse('Invalid')
@@ -81,15 +90,7 @@ def addplayer_view(request):
 def load_admin_view(request):
     return render(request, 'Manager/adminpage.html')
 
-#Add tournmets from the admin home page
-def addtournment_view(request):
-    addtourform = AddTournmentsForm()
-    if request.method=='POST':
-        addtourform = AddTournmentsForm(request.POST)
-        if addtourform.is_valid():
-            addtourform.save()
-            return redirect('/admpg')
-    return render(request,'Manager/addtournment.html',{'addtourform':addtourform})
+
 
 #To add news from the admin side
 def addnews_view(request):
@@ -110,14 +111,6 @@ class NewsList(ListView):
 class NewsDetail(DetailView):
     model= AddNews
     context_object_name = 'mynews'
-
-
-
-
-def show_tournments_view(request):
-    tournment = AddTournments.objects.all()
-    return render(request,'Manager/showtour.html',{'tournment':tournment})
-
 
 
 def dictfetchall(cursor):
@@ -164,3 +157,165 @@ def  delete_view(request,id):
 #to make payment for a tournment
 def makepayment_view(request):
     return render(request,'Manager/payment.html')
+
+#To display all the teams under club tab
+class ClubListView(ListView):
+    model = AddTeam
+    template_name = 'Manager/listclubs.html'
+    context_object_name = 'myclubs'
+
+#display players belongs to each team
+def playerlist_view(request, id):
+    if request.method == "GET" :
+        print("inside get")
+        team_id = AddTeam.objects.get(id=id)
+        print(team_id)
+        print(team_id.id)
+        playerlist = AddPlayer.objects.filter(team_name=team_id.id)
+        print(playerlist)
+        return render(request,'Manager/listplayers.html',{'playerlist':playerlist})
+
+#Add tournmets from the admin home page
+def addtournment_view(request):
+    addtourform = AddTournmentsForm()
+    if request.method=='POST':
+        addtourform = AddTournmentsForm(request.POST)
+        if addtourform.is_valid():
+            addtourform.save()
+            #TournmentRegistration.objects.create(tr_name=trnmnt, team_name= team_obj, is_registred= False)
+            return redirect('/admpg')
+    return render(request,'Manager/addtournment.html',{'addtourform':addtourform})
+
+#view for tournment registration
+def tournmentreg(request, id):
+    registerform = TournmentRegistrationForm()
+    if request.method == 'POST':
+        registerform = TournmentRegistrationForm(request.POST)
+        if registerform.is_valid():
+            registerform.save()
+
+    else:
+        user_obj = User.objects.get(id=config.userid)
+        team_obj = AddTeam.objects.get(username=user_obj)
+        trnm_obj = AddTournments.objects.get(id=id)
+        TournmentRegistration.objects.create(is_registred = False, team_name = team_obj, tr_name = trnm_obj)
+        print("Insde views.py")
+        return render(request,'Manager/tournmentregistration.html',{'registerform':registerform})
+
+def show_tournments_view(request):
+    print("Inside show tournment")
+    print("***********************************************")
+    #user_obj = User.objects.get(id=config.userid)
+    #team_obj = AddTeam.objects.get(username=user_obj)
+    user_obj = User.objects.get(id=config.userid)
+    team_obj = AddTeam.objects.get(username=user_obj)
+    x= team_obj.id
+    y= user_obj.id
+
+    print(team_obj)
+
+    cursor = connection.cursor()
+    cursor1 = connection.cursor()
+
+    cursor.execute("""select DISTINCT Manager_addtournments.id,
+	   Manager_addtournments.t_name,
+	   Manager_addtournments.t_venue,
+	   Manager_addtournments.s_date,
+	   Manager_addtournments.e_date,
+	   Manager_addtournments.r_fee
+       from  Manager_addtournments
+       LEFT OUTER JOIN Manager_tournmentregistration
+       ON (Manager_addtournments.id = Manager_tournmentregistration.tr_name_id)
+       where Manager_addtournments.id not in
+       (SELECT tr_name_id from Manager_tournmentregistration WHERE team_name_id = %d) """%(x))
+
+    cursor1.execute("""
+    select t_name,t_venue,s_date,e_date,r_fee from Manager_addtournments
+    LEFT OUTER JOIN Manager_tournmentregistration
+    on
+    (Manager_addtournments.id = Manager_tournmentregistration.tr_name_id)
+    LEFT OUTER JOIN Manager_addteam
+    on
+    (Manager_tournmentregistration.team_name_id=Manager_addteam.id)
+    where Manager_addteam.username_id= %d """%(y))
+
+
+    dict = {}
+    dict1 = {}
+
+    dict = dictfetchall(cursor)
+    dict1 = dictfetchall(cursor1)
+
+    print(dict)
+    print("Nedumbally")
+    print(dict1)
+
+
+    return render(request,'Manager/showtour.html', {'dict':dict, 'dict1':dict1} )
+
+
+#view for show tournmets from index page
+def fixture_list_view(request):
+    print(" *****************inside drop list **************************")
+    drop_cursor = connection.cursor()
+    drop_cursor.execute("""
+    SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
+	LEFT OUTER JOIN Manager_addtournments
+	on
+	(Manager_tournmentregistration.tr_name_id=Manager_addtournments.id)
+
+    """)
+    drop_dict = {}
+    drop_dict = dictfetchall(drop_cursor)
+    print(drop_dict)
+    #print(drop_dict[1])
+    return render(request,'Manager/fixture_list.html', {'drop_dict':drop_dict} )
+
+#view for display each tournment fixture
+def tournment_fixture_view(request,id):
+    print("##########################")
+    print("inside fixture view")
+    y=config.userid
+    print(y)
+    t_id = AddTournments.objects.get(id=id)
+    print(id)
+    print(t_id.t_name)
+    if y is not None:
+        admin_fixture = connection.cursor()
+        admin_fixture.execute("""
+        select DISTINCT Manager_tournmentregistration.team_name_id, Manager_addteam.team_name,Manager_addtournments.t_name
+        from
+        Manager_tournmentregistration
+        LEFT OUTER JOIN Manager_addteam
+        on
+        (Manager_tournmentregistration.team_name_id = Manager_addteam.id)
+        LEFT outer JOIN
+        Manager_addtournments
+        on (Manager_tournmentregistration.tr_name_id= Manager_addtournments.id)
+        WHERE
+        Manager_tournmentregistration.tr_name_id= %d """%(int(t_id.id)))
+        admin_fixture_dict = {}
+        admin_fixture_dict = dictfetchall(admin_fixture)
+        print(admin_fixture_dict)
+        return render(request,'Manager/add_fixture_admin.html',{'admin_fixture_dict':admin_fixture_dict})
+    else:
+        return render(request,'Manager/tournment_fixture.html')
+
+#view for adding fixture from admin side
+def add_fixture_admin(request):
+    if request.method=='POST':
+        t1=request.POST.get('team1')
+        t2=request.POST.get('team2')
+        fdate=request.POST.get('fdate')
+        print(t1)
+        print(t2)
+        print(fdate)
+        ftime=request.POST.get('ftime')
+        fvenue=request.POST.get('fvenue')
+        ob=AddFixture.objects.create(team_name_one=t1 , team_name_two=t2, match_date=fdate ,match_time=ftime , venue = fvenue )
+        ob.save()
+        return redirect("/fixture")
+"""  else:
+        #if you  are using model form then first load the modelform then render
+        return render(request, "Manager/add_fixture_admin.html")
+        #return HttpResponse(str(t1)+str(t2)+fdate+ftime+fvenue """

@@ -28,14 +28,21 @@ urlpatterns = [
     url(r'^addteam', views.addteam_view),
     url(r'^addplayer', views.addplayer_view),
     url(r'^admpg', views.load_admin_view),
-    url(r'^tournmentadd', views.addtournment_view),
-    url(r'^showtour', views.show_tournments_view),
     url(r'^addnews', views.addnews_view),
     url(r'^listnews', views.NewsList.as_view()),
     url(r'^(?P<pk>\d+)/$', views.NewsDetail.as_view()),
     url(r'^myteam', views.view_team),
     url(r'^delete/(?P<id>\d+)/$', views.delete_view),
     url(r'^payment', views.makepayment_view),
+    url(r'^listclub', views.ClubListView.as_view()),
+    url(r'^player-list/(?P<id>\d+)/$', views.playerlist_view),
+    url(r'^tournmentadd', views.addtournment_view),
+    url(r'^registertour/(?P<id>\d+)/$', views.tournmentreg),
+    url(r'^showtour', views.show_tournments_view),
+    url(r'^fixture', views.fixture_list_view),
+    url(r'^adminfixture', views.add_fixture_admin),
+    url(r'^tour_fixture/(?P<id>\d+)/$', views.tournment_fixture_view),
+
 
 
 ]

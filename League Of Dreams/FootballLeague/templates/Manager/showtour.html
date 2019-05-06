@@ -8,6 +8,14 @@
 
 
 {% block homeblock%}
+<style media="screen">
+.isDisabled {
+color: currentColor;
+cursor: not-allowed;
+opacity: 0.5;
+text-decoration: none;
+}
+</style>
 
 <div class="container">
 
@@ -15,34 +23,60 @@
 
 
 
-                    {% if tournment %}
-                       <table border="2">
+                    {% if dict %}
+                       <table  class="table">
                            <thead>
                            <th> Tournment Name </th>
                            <th> Tournment Venue </th>
                            <th> Start Date </th>
                            <th> End Date </th>
                            <th> Registration Fee</th>
-                           <th> Is Registred?</th>
+                           <th> Is Registred? </th>
                            <th> Actions</th>
+                      <!--     <th> Is Registred?</th>
+                           <th> Actions</th> -->
                            </thead>
-                           {% for t in tournment%}
+                           {% for t in dict%}
                            <tr>
                                <td style="width:100px">{{t.t_name}} </td>
                                <td>{{t.t_venue}} </td>
                                <td>{{t.s_date}} </td>
                                <td>{{t.e_date}} </td>
                                <td>{{t.r_fee}} </td>
-                               <td> {{t.is_registred|yesno:"Yes,No"}}</td>
-                              <td> <a href="/payment"> Make Payment</a> </td>
-
+                               <td> {{t.is_registred|yesno:"Yes,No"}} </td>
+                               <td> <a href="/registertour/{{t.id}}"> Register</a> </td>
 
                             </tr>
                            {%endfor%}
                        </table>
                     {% else %}
-                    <p> No Tournments Available</p>
+                    <p> No New Tournments Available</p>
                     {% endif%}
+                    <br>
+                    <br>
+                    <br>
+<h1> Registred Tournments </h1>
+                    {%if dict1%}
+                    <table  class="table">
+                      <thead>
+                        <th> Tournment Name </th>
+                        <th> Tournment Venue </th>
+                        <th> Start Date </th>
+                        <th> End Date </th>
+                      </thead>
+                      {%for d in dict1%}
+                      <tr>
+                        <td>{{d.t_name}}</td>
+                        <td>{{d.t_venue}}</td>
+                        <td>{{d.s_date}}</td>
+                        <td>{{d.e_date}}</td>
+                      </tr>
+                      {%endfor%}
+
+                    </table>
+                    {%else%}
+                      <p>No Tournment Registred</p>
+                    {%endif%}
 
 </div>
 

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+{% extends 'Manager/indexbase.html'%}
+{%load staticfiles%}
+
+
+
+{% block indexblock%}
+
+<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+
+<div class="container">
+
+{% for clubs in myclubs %}
+
+ <a href="/player-list/{{clubs.id}}"> <h2>{{clubs.team_name}}</h2> </a>
+ <a href="/player-list/{{clubs.id}}"> <img src="{{clubs.team_logo.url}}" > </a>
+
+{%endfor%}
+
+</div>
+{%endblock%}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+{% extends 'Manager/adminbase.html'%}
+
+{%load staticfiles%}
+
+<link rel="stylesheet" href="{%static 'css/home.css' %}">
+
+{% load crispy_forms_tags %}
+
+{% block adminblock  %}
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+<link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+
+<h1 id="heading"> Add Fixture </h1> <br>
+
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+
+            <div class="card">
+                <div class="col-sm-3 col-md-5 col-lg-12">
+                <div class="panel panel-default">
+                <div class="panel-body">
+
+
+                        <form method="post" autocomplete="off" action="/adminfixture" >
+                          {%csrf_token%}
+                          <!-- copying -->
+                      <!--    <h3>Registred Teams for the tournment are</h3>
+
+                          {% for f in admin_fixture_dict %}
+                          <h4>{{f.team_name}}</h4>
+                          {%endfor%}
+                          <br> -->
+
+
+                          <div class="form-row">
+                          <div class="form-group col-md-6 mb-0">
+                                    <h4> Select Team 1</h4>
+                          <select title="Team One" class="form-control" id="team1" name="team1" value="team1">
+                            {% for f in admin_fixture_dict %}
+                            <option value="{{f.team_name_id}}">{{f.team_name}}</option>
+                            {%endfor%}
+                          </select>
+						                  </div>
+                                  <div class="form-group col-md-6 mb-0">
+
+                                    <h4> Select Team 2</h4>
+                          <select title="Team Two" class="form-control" id="team2" name="team2" value="team2">
+                            {% for f in admin_fixture_dict %}
+                            <option value="{{f.team_name_id}}">{{f.team_name}}</option>
+                            {%endfor%}
+                          </select>
+
+                                  </div>
+                              </div>
+                              <!-- Second -->
+
+                              <div class="form-row">
+                          <div class="form-group col-md-5 mb-0">
+						               <h4>Match Date</h4>
+                          <input type="date" value="" class="form-control" name="fdate">
+
+
+						                  </div>
+                                  <div class="form-group col-md-7 mb-0">
+
+								           <h4>Select Time</h4>
+                          <input id="timepicker" width="276" name="ftime" >
+
+								  </div>
+                      </div>
+                      <div class="form-row">
+                          <div class="form-group col-md-12 mb-0">
+						              <h4>Enter Venue</h4>
+                          <input type="text" name="fvenue" value=""  class="form-control">
+
+						                  </div>
+
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-12 mb-0">
+  						              <button type="submit" class="btn btn-primary" id="register">Submit</button>
+
+
+
+  						                  </div>
+
+                          </div>
+  <!--done -->
+
+                        </form>
+                      </div>
+                </div>
+                 </div>
+            </div>
+        </div>
+
+            <div class="col-md-3"></div>
+
+        </div>
+    </main>
+    <script>
+    $( document ).ready(function() {
+        $('#timepicker').timepicker();
+
+
+        $('#register').click(function(){
+          var t1 = $('#team1').val();
+
+          var t2 = $('#team2').val();
+
+          if(t1==t2){
+            alert('same');
+            event.preventDefault();
+          }
+
+
+        });
+    });
+
+    </script>
+{%endblock%}

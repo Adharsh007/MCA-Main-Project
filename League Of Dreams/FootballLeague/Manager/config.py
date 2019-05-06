@@ -1,0 +1,2 @@
+userid = None
+teamid = None

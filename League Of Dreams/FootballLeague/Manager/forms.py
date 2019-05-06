@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from Manager.models import UserProfile,AddTeam,AddPlayer,AddTournments,AddNews
+from Manager.models import *
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -56,21 +56,11 @@ class AddPlayerForm(forms.ModelForm):
                 "position": "Playing Position",
                 "upload_photo" : "Upload Photo"
 
-}
+                }
+    def __init__(self, *args, **kwargs):
+        super(AddPlayerForm, self).__init__(*args, **kwargs)
+        self.fields['address'].widget.attrs['rows'] = 5
 
-class AddTournmentsForm(forms.ModelForm):
-    class Meta:
-        model = AddTournments
-        fields = ['t_name','t_venue','s_date','e_date','r_fee','is_registred']
-        labels = {
-
-            "t_name": "Tournment Name",
-            "t_venue": "Tournment Venue",
-            "s_date": "Start Date",
-            "e_date": "End Date",
-            "r_fee": "Registration Fee",
-            "is_registred": "Registred?"
-        }
 
 class AddNewsForm(forms.ModelForm):
     class Meta:
@@ -82,4 +72,26 @@ class AddNewsForm(forms.ModelForm):
             "news_head": "Headline",
             "body": "News Body",
 
+        }
+
+class AddTournmentsForm(forms.ModelForm):
+    class Meta:
+        model = AddTournments
+        fields = ['t_name','t_venue','s_date','e_date','r_fee']
+        labels = {
+
+            "t_name": "Tournment Name",
+            "t_venue": "Tournment Venue",
+            "s_date": "Start Date",
+            "e_date": "End Date",
+            "r_fee": "Registration Fee",
+
+        }
+
+class TournmentRegistrationForm(forms.ModelForm):
+    class Meta:
+        model = TournmentRegistration
+        fields = ['tr_name']
+        labels = {
+        "tr_name": "Tournment Name"
         }

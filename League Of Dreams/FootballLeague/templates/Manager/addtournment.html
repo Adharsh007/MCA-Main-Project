@@ -25,8 +25,33 @@
 
                         <form  method="post" autocomplete="off" >
                             {%csrf_token%}
-                            {{addtourform|crispy}}
-                            <input type="submit" class="btn btn-primary" value="Save">
+                  <div class="form-row">
+                        <div class="form-group col-md-7 mb-0">
+                                {{ addtourform.t_name|as_crispy_field }}
+                          </div>
+                              <div class="form-group col-md-5 mb-0">
+                                    {{ addtourform.t_venue|as_crispy_field }}
+                                </div>
+                    </div>
+                    <div class="form-row">
+                          <div class="form-group col-md-4 mb-0">
+                                    {{ addtourform.s_date|as_crispy_field }}
+                                  </div>
+                                  <div class="form-group col-md-4 mb-0">
+                                    {{ addtourform.e_date|as_crispy_field }}
+                                  </div>
+				                       <div class="form-group col-md-4 mb-0">
+                                    {{ addtourform.r_fee|as_crispy_field }}
+                                  </div>
+                    </div>
+                    <div class="form-row">
+                          <div class="form-group col-md-12 mb-0">
+				                        <input type="submit" class="btn btn-primary" value="Save">
+                          </div>
+                        </div>
+
+
+
                         </form>
 
 

@@ -40,17 +40,7 @@ class AddPlayer(models.Model):
     def __str__(self):
         return self.first_name
 
-#model for adding tournment by admin
-class AddTournments(models.Model):
-    t_name =models.CharField(max_length=30)
-    t_venue = models.CharField(max_length=30)
-    s_date = models.DateTimeField(default=timezone.now)
-    e_date = models.DateTimeField(default=timezone.now)
-    r_fee = models.IntegerField()
-    is_registred = models.BooleanField(default=False)
 
-    def __str__(self):
-        return self.t_name
 
 #model for adding news from admin
 class AddNews(models.Model):
@@ -66,3 +56,34 @@ class AddNews(models.Model):
 
     def __str__(self):
         return self.news_head
+
+#model for adding tournment by admin
+class AddTournments(models.Model):
+    t_name =models.CharField(max_length=30)
+    t_venue = models.CharField(max_length=30)
+    s_date = models.DateTimeField(default=timezone.now)
+    e_date = models.DateTimeField(default=timezone.now)
+    r_fee = models.IntegerField()
+
+    def __str__(self):
+       return self.t_name
+
+#model for tournment registration
+class TournmentRegistration(models.Model):
+    tr_name = models.ForeignKey(AddTournments,on_delete=models.CASCADE)
+    team_name = models.ForeignKey(AddTeam, on_delete=models.CASCADE)
+    is_registred = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.id)
+#model for adding fixture from admin side
+class AddFixture(models.Model):
+    team_name_one = models.IntegerField()
+    team_name_two = models.IntegerField()
+    match_date = models.DateField()
+    match_time = models.TimeField()
+    venue = models.CharField(max_length=30)
+    status = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.id)
