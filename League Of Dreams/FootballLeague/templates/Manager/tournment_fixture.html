@@ -11,6 +11,31 @@
 
 <div class="container">
     <h1>FIXTURES</h1>
+    {%if user_fixture_dict%}
+    <table id="t1" class="table">
+      <thead>
+        <th>Match Date</th>
+        <th>Match Time</th>
+        <th>Team 1 </th>
+        <th>Team 2</th>
+        <th>Venue</th>
+      </thead>
+      {% for user in user_fixture_dict %}
+        <tr>
+          <td>{{user.match_date}}</td>
+          <td>{{user.match_time}}</td>
+          <td>{{user.Team1}}</td>
+          <td>{{user.Team2}}</td>
+          <td>{{user.venue}}</td>
+
+        </tr>
+
+        {%endfor%}
+      </table>
+      {%else%}
+      <p>No Matches Available</p>
+    {%endif%}
+
 </div>
 
 

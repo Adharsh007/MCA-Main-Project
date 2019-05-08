@@ -27,5 +27,8 @@ class TournmentRegistrationAdmin(admin.ModelAdmin):
 admin.site.register(TournmentRegistration,TournmentRegistrationAdmin)
 
 class AddFixtureAdmin(admin.ModelAdmin):
-    list_display=['team_name_one','team_name_two','match_date','match_time','venue','status']
+    list_display=['tournment_id','match_name','team_name_one','team_name_two','match_date','match_time','venue','status']
 admin.site.register(AddFixture,AddFixtureAdmin)
+
+class AddResultsAdmin(admin.ModelAdmin):
+    list_display=['tournment_id','fixture_id','score_one','score_two']

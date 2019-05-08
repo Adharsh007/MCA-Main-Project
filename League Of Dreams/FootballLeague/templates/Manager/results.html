@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+{% extends 'Manager/indexbase.html'%}
+{%load staticfiles%}
+
+{% load crispy_forms_tags %}
+{% block indexblock%}
+
+<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+
+<div class="container">
+    <h1>Results</h1>
+
+    <form class=""  method="post">
+      {%csrf_token%}
+      {{form_1|crispy}}
+      {{form_2|crispy}}
+      <input type="submit" name="" class="btn btn-primary" value="Submit">
+    </form>
+
+
+</div>
+
+
+{%endblock%}

@@ -256,7 +256,7 @@ def show_tournments_view(request):
 
 #view for show tournmets from index page
 def fixture_list_view(request):
-    print(" *****************inside drop list **************************")
+    print(" *****************inside fixture list **************************")
     drop_cursor = connection.cursor()
     drop_cursor.execute("""
     SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
@@ -271,19 +271,38 @@ def fixture_list_view(request):
     #print(drop_dict[1])
     return render(request,'Manager/fixture_list.html', {'drop_dict':drop_dict} )
 
+
+
 #view for display each tournment fixture
 def tournment_fixture_view(request,id):
-    print("##########################")
-    print("inside fixture view")
+
     y=config.userid
     print(y)
     t_id = AddTournments.objects.get(id=id)
     print(id)
     print(t_id.t_name)
-    if y is not None:
+    if y is None:
+        #show fixtures to the end user
+        print("Inside User fixture")
+        user_fixture = connection.cursor()
+        user_fixture.execute("""
+        SELECT ma.id,ma.match_date, ma.match_time, ma_1.team_name AS "Team1", ma_2.team_name AS "Team2",ma.venue,ma.status,ma.tournment_id_id
+        from Manager_addfixture ma
+        left outer join Manager_addteam ma_1 on ma_1.id=ma.team_name_one
+        left outer join Manager_addteam ma_2 on ma_2.id=ma.team_name_two
+        WHERE ma.status=0 AND ma.tournment_id_id=%d """%(t_id.id))
+        user_fixture_dict = {}
+        user_fixture_dict = dictfetchall(user_fixture)
+        print(user_fixture_dict)
+        return render(request, 'Manager/tournment_fixture.html',{'user_fixture_dict':user_fixture_dict})
+
+
+    elif y is not None:
+        print("Inside admin fixture")
         admin_fixture = connection.cursor()
         admin_fixture.execute("""
-        select DISTINCT Manager_tournmentregistration.team_name_id, Manager_addteam.team_name,Manager_addtournments.t_name
+        select DISTINCT Manager_tournmentregistration.team_name_id, Manager_addteam.team_name,
+        Manager_addtournments.id,Manager_addtournments.t_name
         from
         Manager_tournmentregistration
         LEFT OUTER JOIN Manager_addteam
@@ -297,25 +316,63 @@ def tournment_fixture_view(request,id):
         admin_fixture_dict = {}
         admin_fixture_dict = dictfetchall(admin_fixture)
         print(admin_fixture_dict)
-        return render(request,'Manager/add_fixture_admin.html',{'admin_fixture_dict':admin_fixture_dict})
+        t_id = AddTournments.objects.get(id=id)
+        return render(request,'Manager/add_fixture_admin.html',{'admin_fixture_dict':admin_fixture_dict, 't_id': t_id})
+
     else:
         return render(request,'Manager/tournment_fixture.html')
 
+
+
+
 #view for adding fixture from admin side
 def add_fixture_admin(request):
+    print("****** inside fixture ******")
     if request.method=='POST':
+        tour_name = request.POST.get('trname')
+        tourn_name_id = AddTournments.objects.get(t_name=tour_name)
+        m_name = request.POST.get('mname')
         t1=request.POST.get('team1')
         t2=request.POST.get('team2')
         fdate=request.POST.get('fdate')
+        print(tour_name)
         print(t1)
         print(t2)
         print(fdate)
         ftime=request.POST.get('ftime')
         fvenue=request.POST.get('fvenue')
-        ob=AddFixture.objects.create(team_name_one=t1 , team_name_two=t2, match_date=fdate ,match_time=ftime , venue = fvenue )
+        ob=AddFixture.objects.create(tournment_id=tourn_name_id,match_name=m_name,team_name_one=t1 , team_name_two=t2, match_date=fdate ,match_time=ftime , venue = fvenue )
         ob.save()
         return redirect("/fixture")
-"""  else:
-        #if you  are using model form then first load the modelform then render
-        return render(request, "Manager/add_fixture_admin.html")
-        #return HttpResponse(str(t1)+str(t2)+fdate+ftime+fvenue """
+
+#This view is to show list of tournments while clicking result tab from main index page
+def result_tournment_list(request):
+    result_cursor = connection.cursor()
+    result_cursor.execute("""
+    SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
+	LEFT OUTER JOIN Manager_addtournments
+	on
+	(Manager_tournmentregistration.tr_name_id=Manager_addtournments.id)
+    """)
+    result_dict = {}
+    result_dict = dictfetchall(result_cursor)
+    print(result_dict)
+    return render(request,'Manager/user_result_list.html', {'result_dict':result_dict} )
+
+#this view shows the result from a particular tournment name
+def result_view(request, id):
+
+    if request.method == 'POST':
+        form_1 = ResulTdisplayForm_1(request.POST)
+        form_2 = ResulTdisplayForm_2(request.POST)
+        id = AddTournments.objects.get(id=id)
+        print("Insude result view")
+        print(id)
+        
+    else:
+        form_1 = ResulTdisplayForm_1()
+        form_2 = ResulTdisplayForm_2()
+        id = AddTournments.objects.get(id=id)
+        print("Insude result view")
+        print(id)
+    return render(request,'Manager/results.html',{'form_1':form_1, 'form_2': form_2})

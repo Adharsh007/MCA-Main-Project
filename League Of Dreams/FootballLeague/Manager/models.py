@@ -78,6 +78,8 @@ class TournmentRegistration(models.Model):
         return str(self.id)
 #model for adding fixture from admin side
 class AddFixture(models.Model):
+    tournment_id = models.ForeignKey(AddTournments,on_delete=models.CASCADE)
+    match_name = models.CharField(max_length=30)
     team_name_one = models.IntegerField()
     team_name_two = models.IntegerField()
     match_date = models.DateField()
@@ -86,4 +88,13 @@ class AddFixture(models.Model):
     status = models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.id)
+        return str(self.match_name)
+
+#model for entering match results from admin side
+class AddResults(models.Model):
+    fixture_id = models.ForeignKey(AddFixture,on_delete=models.CASCADE)
+    score_one = models.IntegerField()
+    score_two = models.IntegerField()
+
+    def __str__(self):
+        return self.id
