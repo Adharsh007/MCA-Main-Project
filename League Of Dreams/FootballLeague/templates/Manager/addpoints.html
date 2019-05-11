@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+{% extends 'Manager/adminbase.html'%}
+
+{%load staticfiles%}
+
+
+<link rel="stylesheet" href="{%static 'css/home.css' %}">
+
+{% load crispy_forms_tags %}
+
+{% block adminblock  %}
+
+
+
+<main role="main" class="container">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+
+            <div class="card">
+                <div class="col-sm-3 col-md-5 col-lg-12">
+                <div class="panel panel-default">
+                <div class="panel-body">
+
+
+                <form  method="post" autocomplete="off" action="/to_point_table">
+                  {%csrf_token%}
+                  <h3>Add Points</h3>
+                  <div class="form-row">
+                            <div class="form-group col-md-12 mb-0">
+                              <h4> Tournment Name</h4>
+                              <input type="text" name="trname" id="trname" value="{{tour_id}}">
+                            </div>
+                          </div>
+                  <div class="form-row">
+                        <div class="form-group col-md-12 mb-0">
+                            <h4> Select Match Name </h4>
+                            <select title="Match Name" class="form-control" id="matchname" name="matchname" value="matchname">
+                                {% for p in point_dict %}
+                                    <option value="{{p.match_name}}">{{p.match_name}}</option>
+                                {%endfor%}
+                            </select>
+        						      </div>
+
+                  </div>
+
+                  <div class="form-row">
+                        <div class="form-group col-md-6 mb-0">
+                            <h4> Select Team 1</h4>
+                            <select title="Team One" class="form-control" id="team1" name="team1" value="team1">
+                               {% for team in team_dict %}
+                                   <option value="{{team.Team1}}">{{team.Team1}}</option>
+                                {%endfor%}
+                            </select>
+                          </div>
+                                <div class="form-group col-md-6 mb-0">
+
+                                  <h4> Select Team 2</h4>
+                        <select title="Team Two" class="form-control" id="team2" name="team2" value="team2">
+                          {% for team in team_dict %}
+                          <option value="{{team.Team2}}">{{team.Team2}}</option>
+                          {%endfor%}
+                        </select>
+
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+
+                              <div class="form-group col-md-6 mb-0">
+                              <h4>Team One Goals</h4>
+                              <input type="text" name="t1goals" value=""  class="form-control" id="t1goals">
+
+                            </div>
+
+                            <div class="form-group col-md-6 mb-0">
+                            <h4>Team Two Goals</h4>
+                            <input type="text" name="t2goals" value=""  class="form-control" id="t2goals">
+
+                          </div>
+                        </div>
+
+                        <div class="form-row">
+
+                          <div class="form-group col-md-6 mb-0">
+                          <h4>Team One Point</h4>
+                          <input type="text" name="t1point" value=""  class="form-control" id="t1point">
+
+                        </div>
+
+                        <div class="form-group col-md-6 mb-0">
+                        <h4>Team Two Point</h4>
+                        <input type="text" name="t2point" value=""  class="form-control" id="t2point">
+
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                  <div class="form-group col-md-12 mb-0">
+                  <button type="submit" class="btn btn-primary" id="register">Submit</button>
+                </div>
+
+                </div>
+
+
+                </form>
+
+
+                </div>
+                </div>
+                 </div>
+            </div>
+        </div>
+
+                <div class="col-md-3"></div>
+
+        </div>
+    </main>
+
+    <script>
+      $( document ).ready(function() {
+        $('#timepicker').timepicker();
+
+        $('#register').click(function(){
+          var t1 = $('#team1').val();
+
+          var t2 = $('#team2').val();
+          if(t1==t2){
+            alert('same');
+            event.preventDefault();
+          }
+        });
+      });
+    </script>
+
+{%endblock%}

@@ -39,11 +39,23 @@ urlpatterns = [
     url(r'^tournmentadd', views.addtournment_view),
     url(r'^registertour/(?P<id>\d+)/$', views.tournmentreg),
     url(r'^showtour', views.show_tournments_view),
-    url(r'^fixture', views.fixture_list_view),
-    url(r'^adminfixture', views.add_fixture_admin),
-    url(r'^tour_fixture/(?P<id>\d+)/$', views.tournment_fixture_view),
-    url(r'^result_list', views.result_tournment_list),
-    url(r'^result/(?P<id>\d+)/$', views.result_view),
+    url(r'^tourlist', views.fix_tour_list),
+    url(r'^addfixture/(?P<id>\d+)/$', views.add_fixture_admin),
+    url(r'^to_fix_table', views.fixture_table),
+    url(r'^point_tourlist', views.point_tour_list),
+    url(r'^addpoints/(?P<id>\d+)/$', views.add_points_admin),
+    url(r'^to_point_table', views.point_table),
+    url(r'^standings_tourlist', views.standing_tour_list),
+    url(r'^standings/(?P<id>\d+)/$', views.standing_list),
+
+
+
+
+
+
+
+
+
 
 
 

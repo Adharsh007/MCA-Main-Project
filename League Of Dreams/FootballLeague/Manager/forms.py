@@ -95,14 +95,3 @@ class TournmentRegistrationForm(forms.ModelForm):
         labels = {
         "tr_name": "Tournment Name"
         }
-
-
-class ResulTdisplayForm_1(forms.Form):
-    match_name = forms.ModelChoiceField(queryset=AddFixture.objects.all(), label="MatchName")
-    team_1 = forms.ModelChoiceField(queryset=AddTeam.objects.all(), label="Team_1")
-    team_2 = forms.ModelChoiceField(queryset=AddTeam.objects.all(), label="Team_2")
-
-class ResulTdisplayForm_2(forms.ModelForm):
-    class Meta:
-        model = AddResults
-        fields = ['score_one', 'score_two']

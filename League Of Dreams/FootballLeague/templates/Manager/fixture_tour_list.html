@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% extends 'Manager/adminbase.html'%}
+
+{%load staticfiles%}
+
+<link rel="stylesheet" href="{%static 'css/home.css' %}">
+
+{% load crispy_forms_tags %}
+
+{% block adminblock  %}
+
+<div class="jumbotron">
+  <p>Please select the Tournment</p>
+{% for t in tourlist_dict%}
+    <p  class="btn btn-primary"> <a href="/addfixture/{{t.id}}">{{t.t_name}}</a></p> &nbsp &nbsp &nbsp &nbsp &nbsp
+  {%endfor%}
+</div>
+
+
+
+
+{%endblock%}

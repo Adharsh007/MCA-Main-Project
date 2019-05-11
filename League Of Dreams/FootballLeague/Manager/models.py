@@ -76,25 +76,32 @@ class TournmentRegistration(models.Model):
 
     def __str__(self):
         return str(self.id)
-#model for adding fixture from admin side
-class AddFixture(models.Model):
-    tournment_id = models.ForeignKey(AddTournments,on_delete=models.CASCADE)
-    match_name = models.CharField(max_length=30)
-    team_name_one = models.IntegerField()
-    team_name_two = models.IntegerField()
+
+#model for adding fixture
+class AddFixture_table(models.Model):
+    tr_name = models.ForeignKey(AddTournments,on_delete=models.CASCADE)
+    team_one = models.CharField(max_length=30)
+    team_two = models.CharField(max_length=30)
+    match_name = models.CharField(max_length=50)
     match_date = models.DateField()
     match_time = models.TimeField()
     venue = models.CharField(max_length=30)
     status = models.BooleanField(default=False)
 
     def __str__(self):
-        return str(self.match_name)
+        return self.match_name
 
-#model for entering match results from admin side
-class AddResults(models.Model):
-    fixture_id = models.ForeignKey(AddFixture,on_delete=models.CASCADE)
-    score_one = models.IntegerField()
-    score_two = models.IntegerField()
+#model for adding point
+class AddPoints(models.Model):
+    tourn_name_id= models.ForeignKey(AddTournments,on_delete=models.CASCADE)
+    m_name= models.ForeignKey(AddFixture_table,on_delete=models.CASCADE)
+    team_one = models.CharField(max_length=20)
+    team_two= models.CharField(max_length=20)
+    team_1_goal = models.IntegerField()
+    team_2_goal = models.IntegerField()
+    team_1_point= models.IntegerField()
+    team_2_point= models.IntegerField()
+    status = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.id
+        return str(self.id)

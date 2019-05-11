@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+{% extends 'Manager/indexbase.html'%}
+{%load staticfiles%}
+
+
+
+{% block indexblock%}
+
+<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+
+<div class="container">
+
+<div class="jumbotron">
+    <p>Please select the Tournment</p>
+  {% for t in tourlist_dict%}
+      <p  class="btn btn-primary"> <a href="/standings/{{t.id}}">{{t.t_name}}</a></p> &nbsp &nbsp &nbsp &nbsp &nbsp
+    {%endfor%}
+</div>
+
+</div>
+{%endblock%}

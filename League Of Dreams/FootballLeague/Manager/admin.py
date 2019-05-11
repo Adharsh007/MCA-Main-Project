@@ -19,16 +19,17 @@ class AddNewsAdmin(admin.ModelAdmin):
 admin.site.register(AddNews,AddNewsAdmin)
 
 class AddTournmentsAdmin(admin.ModelAdmin):
-    list_display = ['t_name','t_venue','s_date','e_date']
+    list_display = ['t_name','t_venue','s_date','e_date','r_fee']
 admin.site.register(AddTournments,AddTournmentsAdmin)
 
 class TournmentRegistrationAdmin(admin.ModelAdmin):
     list_display=['tr_name','team_name','is_registred']
 admin.site.register(TournmentRegistration,TournmentRegistrationAdmin)
 
-class AddFixtureAdmin(admin.ModelAdmin):
-    list_display=['tournment_id','match_name','team_name_one','team_name_two','match_date','match_time','venue','status']
-admin.site.register(AddFixture,AddFixtureAdmin)
+class AddFixture_tableAdmin(admin.ModelAdmin):
+    list_display=['tr_name','team_one','team_two','match_name','match_date','match_time','venue','status']
+admin.site.register(AddFixture_table,AddFixture_tableAdmin)
 
-class AddResultsAdmin(admin.ModelAdmin):
-    list_display=['tournment_id','fixture_id','score_one','score_two']
+class AddPointsAdmin(admin.ModelAdmin):
+    list_display = ['tourn_name_id','m_name','team_one','team_two','team_1_goal','team_2_goal','team_1_point','team_2_point','status']
+admin.site.register(AddPoints,AddPointsAdmin)
