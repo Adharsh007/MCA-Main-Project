@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+{% extends 'Manager/indexbase.html'%}
+{%load staticfiles%}
+
+{% block indexblock%}
+
+<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+
+<div class="container">
+  <h3>{{tour_id}} Results</h3> <br>
+
+  {%if result_dict%}
+  <table class="table">
+    <thead>
+      <th>Match Date</th>
+      <th>Match Name</th>
+      <th>Team 1</th>
+      <th>Team 1 Score</th>
+      <th>Team 2</th>
+      <th>Team 2 Score</th>
+      <th>Winner</th>
+    </thead>
+    {% for r in result_dict %}
+    <tr>
+      <td>{{r.match_date}}</td>
+      <td>{{r.match_name}}</td>
+      <td>{{r.team_one}}</td>
+      <td>{{r.team_1_goal}}</td>
+      <td>{{r.team_two}}</td>
+      <td>{{r.team_2_goal}}</td>
+      <td>{{r.winner}}</td>
+    </tr>
+    {%endfor%}
+  </table>
+
+  {%else%}
+       <p>No Results are Available</p>
+  {%endif%}
+</div>
+
+{%endblock%}

@@ -99,8 +99,8 @@ class AddPoints(models.Model):
     team_two= models.CharField(max_length=20)
     team_1_goal = models.IntegerField()
     team_2_goal = models.IntegerField()
-    team_1_point= models.IntegerField()
-    team_2_point= models.IntegerField()
+    winner = models.CharField(max_length=30)
+    looser = models.CharField(max_length=30)
     status = models.BooleanField(default=False)
 
     def __str__(self):

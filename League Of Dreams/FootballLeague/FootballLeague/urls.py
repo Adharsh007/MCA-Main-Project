@@ -47,16 +47,12 @@ urlpatterns = [
     url(r'^to_point_table', views.point_table),
     url(r'^standings_tourlist', views.standing_tour_list),
     url(r'^standings/(?P<id>\d+)/$', views.standing_list),
-
-
-
-
-
-
-
-
-
-
+    url(r'^fixture_tourlist', views.fixture_tour_list),
+    url(r'^fixture/(?P<id>\d+)/$', views.fixture_list),
+    url(r'^result_tourlist', views.result_tour_list),
+    url(r'^result/(?P<id>\d+)/$', views.result_list),
+    url(r'^about', views.show_about),
+    url(r'^contact', views.show_contact),
 
 
 

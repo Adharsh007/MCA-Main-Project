@@ -83,14 +83,24 @@
                         <div class="form-row">
 
                           <div class="form-group col-md-6 mb-0">
-                          <h4>Team One Point</h4>
-                          <input type="text" name="t1point" value=""  class="form-control" id="t1point">
+                          <h4>Winner</h4>
+                      <!--    <input type="text" name="t1point" value=""  class="form-control" id="t1point"> -->
+                          <select title="Team One" class="form-control" id="t1point" name="t1point" value="t1point">
+                             {% for team in team2_dict %}
+                                 <option value="{{team.team_name}}">{{team.team_name}}</option>
+                              {%endfor%}
+                          </select>
 
                         </div>
 
                         <div class="form-group col-md-6 mb-0">
-                        <h4>Team Two Point</h4>
-                        <input type="text" name="t2point" value=""  class="form-control" id="t2point">
+                        <h4>Looser</h4>
+                    <!--    <input type="text" name="t2point" value=""  class="form-control" id="t2point"> -->
+                    <select title="Team Two" class="form-control" id="t2point" name="t2point" value="t2point">
+                      {% for team in team2_dict %}
+                      <option value="{{team.team_name}}">{{team.team_name}}</option>
+                      {%endfor%}
+                    </select>
 
                       </div>
                     </div>

@@ -266,7 +266,7 @@ def fix_tour_list(request):
     tourlist_dict = {}
     tourlist_dict =dictfetchall(tourlist_cursor)
     print(tourlist_dict)
-    return render(request,'Manager/fixture_tour_list.html',{'tourlist_dict':tourlist_dict})
+    return render(request,'Manager/admin_fixture_tour_list.html',{'tourlist_dict':tourlist_dict})
 
 #view for adding fixture from admin side
 def add_fixture_admin(request, id):
@@ -358,7 +358,22 @@ def add_points_admin(request, id):
     team_dict= dictfetchall(team_cursor)
     print("Inside team names")
     print(team_dict)
-    return render(request,'Manager/addpoints.html',{'point_dict':point_dict , 'tour_id':tour_id , 'team_dict':team_dict})
+
+    #only for winner and Looser
+    team2_cursor = connection.cursor()
+    team2_cursor.execute("""
+	SELECT Manager_addteam.id,
+	       Manager_addteam.team_name
+    from Manager_addteam
+    LEFT OUTER JOIN Manager_tournmentregistration
+    ON (Manager_addteam.id = Manager_tournmentregistration.team_name_id)
+    WHERE Manager_tournmentregistration.tr_name_id=%d"""%(int(tour_id.id)))
+    team2_dict = {}
+    team2_dict= dictfetchall(team2_cursor)
+    print("Inside Winner and looser")
+    print(team2_dict)
+
+    return render(request,'Manager/addpoints.html',{'point_dict':point_dict , 'tour_id':tour_id , 'team_dict':team_dict , 'team2_dict':team2_dict})
 
 #adding values  to point point_table
 def point_table(request):
@@ -371,8 +386,8 @@ def point_table(request):
             team_two = request.POST.get('team2')
             team_1_goal = request.POST.get('t1goals')
             team_2_goal = request.POST.get('t2goals')
-            team_1_point=request.POST.get('t1point')
-            team_2_point=request.POST.get('t2point')
+            winner=request.POST.get('t1point')
+            looser=request.POST.get('t2point')
             print("inside point table")
             print(tour_name)
             print(tourn_name_id)
@@ -381,10 +396,10 @@ def point_table(request):
             print(team_two)
             print(team_1_goal)
             print(team_2_goal)
-            print(team_1_point)
-            print(team_2_point)
+
+
             ob= AddPoints.objects.create(tourn_name_id=tourn_name_id ,m_name=match_name ,team_one=team_one,
-            team_two=team_two,team_1_goal=team_1_goal,team_2_goal=team_2_goal,team_1_point=team_1_point,team_2_point=team_2_point)
+            team_two=team_two,team_1_goal=team_1_goal,team_2_goal=team_2_goal,winner=winner,looser=looser)
             ob.save()
             return redirect("/point_tourlist")
 
@@ -407,8 +422,16 @@ def standing_tour_list(request):
 def standing_list(request,id):
     tour_id = AddTournments.objects.get(id=id)
     print("Name of the tournmet is")
+    print(type(tour_id))
     print(tour_id)
 
+
+    """"x = AddPoints.objects.values_list('team_one',flat=True)
+    y = AddPoints.objects.values_list('team_two',flat=True)
+    z=x.union(y) #this is (1)
+    print("teams in  tournments are")
+    print(z) """
+    #to find all the teams in clicked tournment
     team_list=connection.cursor()
     team_list.execute("""
     SELECT Manager_addteam.id, Manager_addteam.team_name
@@ -418,30 +441,133 @@ def standing_list(request,id):
     where Manager_tournmentregistration.tr_name_id=%s"""%(int(tour_id.id)))
     team_list_dict = {}
     team_list_dict =dictfetchall(team_list)
+    print("Teams playing in the tournments")
+    print(type(team_list_dict))
     print(team_list_dict)
-    t_count1_dict={}
-    t_count2_dict={}
-    t_count3_dict={}
-    print("******** Team 1 list is ************")
-    for i in team_list_dict:
-        t_count1 = connection.cursor()
-        t_count1.execute("""
-        select Manager_addteam.id,Manager_addpoints.team_one,count(*) As count
-        from Manager_addpoints
-        LEFT OUTER JOIN Manager_addteam
-        on(Manager_addteam.team_name=Manager_addpoints.team_one)
-        where Manager_addteam.id=%d"""%(i['id']))
-        t_count1_dict=dictfetchall(t_count1)
-        print(t_count1_dict)
-    print("******** Team 2 list is ************")
-    for x in team_list_dict:
-        t_count2 = connection.cursor()
-        t_count2.execute("""
-        select Manager_addteam.id,Manager_addpoints.team_two,count(*) As count
-        from Manager_addpoints
-        LEFT OUTER JOIN Manager_addteam
-        on(Manager_addteam.team_name=Manager_addpoints.team_two)
-        where Manager_addteam.id=%d"""%(x['id']))
-        t_count2_dict=dictfetchall(t_count2)
+    # find the number of matches played by each team
+    temp_store=[]
 
-        print(t_count2_dict)
+    for i in team_list_dict:
+        #print(i['team_name'])
+        s=str(i['team_name'])
+        teambycount = connection.cursor()
+        teambycount.execute(""" select (select count(*) as c from Manager_addpoints where team_one = '%s')
+        +
+        (select count(*) as c from Manager_addpoints where team_two = '%s'
+        and Manager_addpoints.tourn_name_id_id=%d) as "no_of_matches",
+        (select count(*) as c from Manager_addpoints where
+        Manager_addpoints.winner ='%s' and Manager_addpoints.tourn_name_id_id=%d)
+        as wincount,
+        (select count(*) as c from Manager_addpoints where
+        Manager_addpoints.looser ='%s' and Manager_addpoints.tourn_name_id_id=%d)
+        as losscount,
+        (select count(*)*3 as d  from Manager_addpoints where
+        Manager_addpoints.winner ='%s' and Manager_addpoints.tourn_name_id_id=%d)
+        as point
+        """%(s, s, int(tour_id.id), s ,int(tour_id.id) , s , int(tour_id.id), s, int(tour_id.id)))
+
+
+
+        a=[]
+
+        a=dictfetchall(teambycount)
+
+
+        #print("****" + str(a[0]['totcount']))
+        samp = {
+        'team_name': s,
+        'Matches': int(a[0]['no_of_matches']),
+        'wins': int(a[0]['wincount']),
+        'loss': int(a[0]['losscount']),
+        'Points': int(a[0]['point'])
+
+
+        }
+
+        temp_store.append(samp)
+
+
+
+    print("*** Welcome to the Point table ********")
+    print(type(temp_store))
+    print(temp_store)
+    return render(request,'Manager/team_standings.html',{'temp_store':temp_store})
+
+#view shows list of available tournmets while click on fixture tab from index page
+def fixture_tour_list(request):
+    tourlist_cursor =connection.cursor()
+    tourlist_cursor.execute("""
+    SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
+	LEFT OUTER JOIN Manager_addtournments
+	on
+	(Manager_tournmentregistration.tr_name_id=Manager_addtournments.id)
+    """)
+    tourlist_dict = {}
+    tourlist_dict =dictfetchall(tourlist_cursor)
+    print(tourlist_dict)
+    return render(request,'Manager/fixture_tour_list.html',{'tourlist_dict':tourlist_dict})
+
+
+
+#view shows fixtures respective to the tournments
+def fixture_list(request,id):
+    tour_id = AddTournments.objects.get(id=id)
+    print("Name of the tournmet is")
+    print(tour_id)
+    f_cursor =connection.cursor()
+    f_cursor.execute("""SELECT Manager_addfixture_table.match_date,
+	                               Manager_addfixture_table.match_time,
+	                               Manager_addfixture_table.team_one,
+	                               Manager_addfixture_table.team_two,
+	                               Manager_addfixture_table.match_name,
+	                               Manager_addfixture_table.venue
+	from Manager_addfixture_table
+    where Manager_addfixture_table.tr_name_id=%d"""%(int(tour_id.id)))
+    fixture_dict = {}
+    fixture_dict =dictfetchall(f_cursor)
+    print(fixture_dict)
+    return render(request,'Manager/fixture_list.html',{'tour_id':tour_id, 'fixture_dict':fixture_dict})
+
+#view shows list of available tournmets while click on Result tab from index page
+def result_tour_list(request):
+    result_cursor =connection.cursor()
+    result_cursor.execute("""
+    SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
+	LEFT OUTER JOIN Manager_addtournments
+	on
+	(Manager_tournmentregistration.tr_name_id=Manager_addtournments.id)
+    """)
+    r_dict = {}
+    r_dict =dictfetchall(result_cursor)
+    print(r_dict)
+    return render(request,'Manager/result_tour_list.html',{'r_dict':r_dict})
+
+#view shows fixtures respective to the tournments
+def result_list(request,id):
+    tour_id = AddTournments.objects.get(id=id)
+    print("Name of the tournmet is")
+    print(tour_id)
+    r_cursor =connection.cursor()
+    r_cursor.execute("""
+    select Manager_addfixture_table.match_date,
+	   Manager_addfixture_table.match_name,
+	   Manager_addpoints.team_one,
+	   Manager_addpoints.team_1_goal,
+	   Manager_addpoints.team_two,
+	   Manager_addpoints.team_2_goal,
+	   Manager_addpoints.winner
+    from Manager_addfixture_table
+    LEFT OUTER JOIN Manager_addpoints
+    on(Manager_addfixture_table.id=Manager_addpoints.m_name_id)
+    WHERE Manager_addpoints.tourn_name_id_id=%d"""%(int(tour_id.id)))
+    result_dict = {}
+    result_dict =dictfetchall(r_cursor)
+    print(result_dict)
+    return render(request,'Manager/result.html',{'tour_id':tour_id, 'result_dict':result_dict})
+
+#view for show About
+def show_about(request):
+    return render(request,'Manager/about.html')
+
+def show_contact(request):
+    return render(request,'Manager/contact.html')

@@ -9,12 +9,35 @@
 
 <link rel="stylesheet" href="{%static 'css/guest.css' %}">
 
-<div class="jumbotron">
-  <p>Please select the Tournment</p>
-{% for d in drop_dict%}
-    <p class="btn btn-primary"> <a href="/tour_fixture/{{d.id}}">{{d.t_name}}</a></p> &nbsp &nbsp &nbsp &nbsp &nbsp
-  {%endfor%}
+<div class="container">
+  <h3>{{tour_id}} Fixtures</h3> <br>
+
+{%if fixture_dict%}
+  <table class="table">
+    <thead>
+      <th>Match Date</th>
+      <th>Time</th>
+      <th>Team 1 </th>
+      <th>Team 2</th>
+      <th>venue</th>
+    </thead>
+    {%for f in fixture_dict%}
+    <tr>
+      <td>{{f.match_date}}</td>
+      <td>{{f.match_time}}</td>
+      <td>{{f.team_one}}</td>
+      <td>{{f.team_two}}</td>
+      <td>{{f.venue}}</td>
+    </tr>
+    {%endfor%}
+
+  </table>
+
+{%else%}
+  <p>No Fixtures Available</p>
+{%endif%}
+
+
+
 </div>
-
-
 {%endblock%}

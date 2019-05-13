@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% extends 'Manager/indexbase.html'%}
+{% extends 'Manager/adminbase.html'%}
 
 {%load staticfiles%}
 
@@ -7,12 +7,12 @@
 
 {% load crispy_forms_tags %}
 
-{% block indexblock%}
+{% block adminblock  %}
 
 <div class="jumbotron">
   <p>Please select the Tournment</p>
 {% for t in tourlist_dict%}
-    <p  class="btn btn-primary"> <a href="/fixture/{{t.id}}">{{t.t_name}}</a></p> &nbsp &nbsp &nbsp &nbsp &nbsp
+    <p  class="btn btn-primary"> <a href="/addpoints/{{t.id}}">{{t.t_name}}</a></p> &nbsp &nbsp &nbsp &nbsp &nbsp
   {%endfor%}
 </div>
 

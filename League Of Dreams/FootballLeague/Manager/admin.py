@@ -31,5 +31,5 @@ class AddFixture_tableAdmin(admin.ModelAdmin):
 admin.site.register(AddFixture_table,AddFixture_tableAdmin)
 
 class AddPointsAdmin(admin.ModelAdmin):
-    list_display = ['tourn_name_id','m_name','team_one','team_two','team_1_goal','team_2_goal','team_1_point','team_2_point','status']
+    list_display = ['tourn_name_id','m_name','team_one','team_two','team_1_goal','team_2_goal','winner','looser','status']
 admin.site.register(AddPoints,AddPointsAdmin)

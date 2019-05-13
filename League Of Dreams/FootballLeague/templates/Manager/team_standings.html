@@ -11,8 +11,30 @@
 
 <div class="container">
 
-<h1>{{tour_id}} Standings</h1>
+<h1>{{tour_id}} Standings</h1> <br>
 
+{% if temp_store%}
+  <table class="table">
+    <thead>
+      <th>Team Name</th>
+      <th>Played</th>
+      <th>Won</th>
+      <th>Lost</th>
+      <th>Points</th>
+    </thead>
+    {%for t in temp_store %}
+    <tr>
+      <td>{{t.team_name}}</td>
+      <td>{{t.Matches}}</td>
+      <td>{{t.wins}}</td>
+      <td>{{t.loss}}</td>
+      <td>{{t.Points}}</td>
+    </tr>
+    {%endfor%}
+  </table>
+{%else%}
+  <p>No Standings Available</p>
+{%endif%}
 
 </div>
 {%endblock%}
