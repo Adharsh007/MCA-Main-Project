@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+{% extends 'Manager/indexbase.html'%}
+{%load staticfiles%}
+
+
+
+{% block indexblock%}
+
+<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+
+<div class="container">
+  <h3>{{tour_id}} Top Goal Keepers List</h3> <br>
+  {%if top_gk_dict%}
+  <table class="table">
+    <thead>
+      <th>Goal Keeper</th>
+      <th>Saves</th>
+      <th>Team Name</th>
+    </thead>
+    {%for t in top_gk_dict%}
+    <tr>
+      <td>{{t.gk_names}}</td>
+      <td>{{t.Saves}}</td>
+      <td>{{t.team_name}}</td>
+    </tr>
+    {%endfor%}
+  </table>
+  {%else%}
+  <p>No List Available</p>
+  {%endif%}
+
+</div>
+{%endblock%}

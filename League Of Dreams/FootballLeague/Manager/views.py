@@ -8,6 +8,7 @@ from django.db import connection
 from django.views.generic import ListView,DetailView
 from Manager import config
 import itertools
+from Manager.utils import *
 
 # Create your views here.
 
@@ -491,7 +492,7 @@ def standing_list(request,id):
     print("*** Welcome to the Point table ********")
     print(type(temp_store))
     print(temp_store)
-    return render(request,'Manager/team_standings.html',{'temp_store':temp_store})
+    return render(request,'Manager/team_standings.html',{'temp_store':temp_store,'tour_id':tour_id})
 
 #view shows list of available tournmets while click on fixture tab from index page
 def fixture_tour_list(request):
@@ -571,3 +572,331 @@ def show_about(request):
 
 def show_contact(request):
     return render(request,'Manager/contact.html')
+
+def pdf_view(request):
+    #return HttpResponse('Hi')
+    tour = request.POST.get('tour_id')
+    print("inside pdf")
+    print("********* Inside Tournment is *******")
+    print(tour)
+    tour_id = AddTournments.objects.get(t_name=tour)
+    print("DIsplay tournmentId ")
+    print(tour_id)
+    print(tour_id.id)
+
+
+	#to find all the teams in clicked tournment
+    team_list=connection.cursor()
+    team_list.execute("""
+    SELECT Manager_addteam.id, Manager_addteam.team_name
+    FROM Manager_addteam
+    LEFT OUTER JOIN Manager_tournmentregistration
+    on (Manager_addteam.id= Manager_tournmentregistration.team_name_id)
+    where Manager_tournmentregistration.tr_name_id=%s"""%(tour_id.id))
+    team_list_dict = {}
+    team_list_dict =dictfetchall(team_list)
+    print("Teams playing in the tournments inside pdf is")
+    #print(type(team_list_dict))
+    print(team_list_dict)
+    # find the number of matches played by each team
+    temp_store=[]
+
+    for i in team_list_dict:
+        #print(i['team_name'])
+        s=str(i['team_name'])
+        teambycount = connection.cursor()
+        teambycount.execute(""" select (select count(*) as c from Manager_addpoints where team_one = '%s')
+        +
+        (select count(*) as c from Manager_addpoints where team_two = '%s'
+        and Manager_addpoints.tourn_name_id_id=%d) as "no_of_matches",
+        (select count(*) as c from Manager_addpoints where
+        Manager_addpoints.winner ='%s' and Manager_addpoints.tourn_name_id_id=%d)
+        as wincount,
+        (select count(*) as c from Manager_addpoints where
+        Manager_addpoints.looser ='%s' and Manager_addpoints.tourn_name_id_id=%d)
+        as losscount,
+        (select count(*)*3 as d  from Manager_addpoints where
+        Manager_addpoints.winner ='%s' and Manager_addpoints.tourn_name_id_id=%d)
+        as point
+        """%(s, s, int(tour_id.id), s ,int(tour_id.id) , s , int(tour_id.id), s, int(tour_id.id)))
+
+
+
+        a=[]
+
+        a=dictfetchall(teambycount)
+
+
+        #print("****" + str(a[0]['totcount']))
+        samp = {
+        'team_name': s,
+        'Matches': int(a[0]['no_of_matches']),
+        'wins': int(a[0]['wincount']),
+        'loss': int(a[0]['losscount']),
+        'Points': int(a[0]['point'])
+        }
+
+        temp_store.append(samp)
+    print("Final result in the pdf view is")
+    print(temp_store)
+
+    pdf = render_to_pdf('pdf/invoice.html', {'temp_store':temp_store})
+    return HttpResponse(pdf, content_type='application/pdf')
+
+#list available tournment list while click on goals and assist from admin side
+def goals_assist_tour_list(request):
+    goals_assist_cursor =connection.cursor()
+    goals_assist_cursor.execute("""
+    SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
+	LEFT OUTER JOIN Manager_addtournments
+	on
+	(Manager_tournmentregistration.tr_name_id=Manager_addtournments.id)
+    """)
+    goals_assist_dict = {}
+    goals_assist_dict =dictfetchall(goals_assist_cursor)
+    print(goals_assist_dict)
+    return render(request,'Manager/g_and_a_tour_list.html',{'goals_assist_dict':goals_assist_dict})
+
+#viwe for adding goals and assist from admin side
+def add_goals_assists(request, id):
+    tour_id = AddTournments.objects.get(id=id)
+    print(tour_id)
+    admin_ga = connection.cursor()
+    admin_ga.execute("""
+        select Manager_tournmentregistration.team_name_id, Manager_addteam.team_name,
+        Manager_addtournments.id,Manager_addtournments.t_name
+        from
+        Manager_tournmentregistration
+        LEFT OUTER JOIN Manager_addteam
+        on
+        (Manager_tournmentregistration.team_name_id = Manager_addteam.id)
+        LEFT outer JOIN
+        Manager_addtournments
+        on (Manager_tournmentregistration.tr_name_id= Manager_addtournments.id)
+        WHERE
+        Manager_tournmentregistration.tr_name_id= %d """%(int(tour_id.id)))
+    admin_ga_dict = {}
+    admin_ga_dict = dictfetchall(admin_ga)
+
+    print(admin_ga_dict)
+
+    point_cursor = connection.cursor()
+    point_cursor.execute("""
+    SELECT Manager_addfixture_table.match_name
+    from Manager_addfixture_table
+    where Manager_addfixture_table.tr_name_id=%d"""%(int(tour_id.id)))
+    point_dict = {}
+    point_dict= dictfetchall(point_cursor)
+    print("Inside add points")
+    print(point_dict)
+
+
+    return render(request,'Manager/add_g_a.html',{'admin_ga_dict':admin_ga_dict,'tour_id':tour_id,'point_dict':point_dict})
+
+# adding values into goals and assist table
+def ganda_table(request):
+    if request.method == 'POST':
+        tour_name = request.POST.get('trname')
+        tourn_name= AddTournments.objects.get(t_name=tour_name)
+        mat_name = request.POST.get('matchname')
+        match_name = AddFixture_table.objects.get(match_name=mat_name)
+        g_name = request.POST.get('gname')
+        a_name = request.POST.get('aname')
+        t_name = request.POST.get('teamnm')
+        team_name = AddTeam.objects.get(team_name=t_name)
+        g_time = request.POST.get('gtime')
+        print("Inside ganda table")
+        print(tour_name)
+        print(tourn_name.id)
+        print(mat_name)
+        print(g_name)
+        print(a_name)
+        x=len(a_name)
+        if (x==0):
+            print("Empty Spootted")
+            a_name = 'NULL'
+            print(a_name)
+        print(t_name)
+        print(g_time)
+        ob =AddGoalsandAssist.objects.create(tour_name=tourn_name, matchname=match_name,
+        Scorer_name=g_name,assist_name=a_name,team_name=team_name,g_time=g_time)
+        ob.save()
+        return redirect("/galist")
+
+#list all the available tornmrnt while click on saves from admin adminpage
+def save_tour_list(request):
+    save_cursor =connection.cursor()
+    save_cursor.execute("""
+    SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
+	LEFT OUTER JOIN Manager_addtournments
+	on
+	(Manager_tournmentregistration.tr_name_id=Manager_addtournments.id)
+    """)
+    save_dict = {}
+    save_dict =dictfetchall(save_cursor)
+    print(save_dict)
+    return render(request,'Manager/saves_tour_list.html',{'save_dict':save_dict})
+
+
+#viwe for adding goals and assist from admin side
+def saves_list(request, id):
+    tour_id = AddTournments.objects.get(id=id)
+    print(tour_id)
+    save_cursor = connection.cursor()
+    save_cursor.execute("""
+        select Manager_tournmentregistration.team_name_id, Manager_addteam.team_name,
+        Manager_addtournments.id,Manager_addtournments.t_name
+        from
+        Manager_tournmentregistration
+        LEFT OUTER JOIN Manager_addteam
+        on
+        (Manager_tournmentregistration.team_name_id = Manager_addteam.id)
+        LEFT outer JOIN
+        Manager_addtournments
+        on (Manager_tournmentregistration.tr_name_id= Manager_addtournments.id)
+        WHERE
+        Manager_tournmentregistration.tr_name_id= %d """%(int(tour_id.id)))
+    saves_dict = {}
+    saves_dict = dictfetchall(save_cursor)
+
+    print(saves_dict)
+
+    point_cursor = connection.cursor()
+    point_cursor.execute("""
+    SELECT Manager_addfixture_table.match_name
+    from Manager_addfixture_table
+    where Manager_addfixture_table.tr_name_id=%d"""%(int(tour_id.id)))
+    point_dict = {}
+    point_dict= dictfetchall(point_cursor)
+    print("Inside add points")
+    print(point_dict)
+
+
+    return render(request,'Manager/add_saves.html',{'saves_dict':saves_dict,'tour_id':tour_id,'point_dict':point_dict})
+
+
+#Adding values to the saves table
+def goalkeeper(request):
+    if request.method == 'POST':
+        tour_name = request.POST.get('trname')
+        tourn_name= AddTournments.objects.get(t_name=tour_name)
+        mat_name = request.POST.get('matchname')
+        match_name = AddFixture_table.objects.get(match_name=mat_name)
+        gkname = request.POST.get('gname')
+        saves= request.POST.get('saves')
+        t_name = request.POST.get('teamnm')
+        team_name = AddTeam.objects.get(team_name=t_name)
+        print(tourn_name)
+        print(match_name)
+        print(gkname)
+        print(saves)
+        print(team_name)
+        ob =AddGoalKeeperSaves.objects.create(tour_name=tourn_name, matchname=match_name,
+        gk_names=gkname,saves=saves,team_name=team_name)
+        ob.save()
+        return redirect("/s_tour_list")
+
+
+# ****************** Listing Statics from Index Page ****************************
+
+#show tournment list when click on top goals from index page
+def tourlist_goals(request):
+    top_goal_cursor =connection.cursor()
+    top_goal_cursor.execute("""
+    SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
+	LEFT OUTER JOIN Manager_addtournments
+	on
+	(Manager_tournmentregistration.tr_name_id=Manager_addtournments.id)
+    """)
+    top_goal_dict = {}
+    top_goal_dict =dictfetchall(top_goal_cursor)
+    print(top_goal_dict)
+    return render(request,'Manager/top_goals_tour_list.html',{'top_goal_dict':top_goal_dict})
+
+
+
+# list top goal scores
+def top_goals_list(request, id):
+    tour_id = AddTournments.objects.get(id=id)
+    print(tour_id)
+    goal_cursor = connection.cursor()
+    goal_cursor.execute("""
+    select Manager_addgoalsandassist.Scorer_name as "Player",count(*) as "Goals" , Manager_addteam.team_name as "Team"
+    from Manager_addgoalsandassist
+    LEFT OUTER JOIN Manager_addteam
+    on(Manager_addgoalsandassist.team_name_id=Manager_addteam.id)
+    where Manager_addgoalsandassist.tour_name_id=%d
+    GROUP by Manager_addgoalsandassist.Scorer_name
+    ORDER By Goals DESC""" %(int(tour_id.id)))
+
+    top_goal_dict = {}
+    top_goal_dict = dictfetchall(goal_cursor)
+    print(top_goal_dict)
+    return render(request,'Manager/top_goals.html',{'top_goal_dict':top_goal_dict,'tour_id':tour_id})
+
+
+#show tournment list when click on top saves from index page
+def t_saves_tourlist(request):
+    top_save_cursor =connection.cursor()
+    top_save_cursor.execute("""
+    SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
+	LEFT OUTER JOIN Manager_addtournments
+	on
+	(Manager_tournmentregistration.tr_name_id=Manager_addtournments.id)
+    """)
+    top_save_dict = {}
+    top_save_dict =dictfetchall(top_save_cursor)
+    print(top_save_dict)
+    return render(request,'Manager/top_saves_tour_list.html',{'top_save_dict':top_save_dict})
+
+# list top saves
+def top_gk_list(request, id):
+    tour_id = AddTournments.objects.get(id=id)
+    print(tour_id)
+    gk_cursor = connection.cursor()
+    gk_cursor.execute("""
+    select Manager_addgoalkeepersaves.gk_names,sum(saves) as "Saves" , Manager_addteam.team_name
+    from Manager_addgoalkeepersaves
+	left OUTER JOIN Manager_addteam
+	on(Manager_addgoalkeepersaves.team_name_id=Manager_addteam.id)
+    where Manager_addgoalkeepersaves.tour_name_id=%d
+    GROUP by Manager_addgoalkeepersaves.gk_names""" %(int(tour_id.id)))
+    top_gk_dict = {}
+    top_gk_dict = dictfetchall(gk_cursor)
+    print(top_gk_dict)
+    return render(request,'Manager/top_gk.html',{'top_gk_dict':top_gk_dict})
+
+
+
+
+#show tournment list when click on top assist from index page
+def t_assist_tourlist(request):
+        top_assist_cursor =connection.cursor()
+        top_assist_cursor.execute("""
+        SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
+    	LEFT OUTER JOIN Manager_addtournments
+    	on
+    	(Manager_tournmentregistration.tr_name_id=Manager_addtournments.id)
+        """)
+        top_assist_dict = {}
+        top_assist_dict =dictfetchall(top_assist_cursor)
+        print(top_assist_dict)
+        return render(request,'Manager/top_assist_tour_list.html',{'top_assist_dict':top_assist_dict})
+
+# list top assists
+def top_assist_list(request, id):
+    tour_id = AddTournments.objects.get(id=id)
+    print(tour_id)
+    assist_cursor = connection.cursor()
+    assist_cursor.execute("""
+    select Manager_addgoalsandassist.assist_name as "Player",count(*) as "Assists" , Manager_addteam.team_name as "Team"
+    from Manager_addgoalsandassist
+    LEFT OUTER JOIN Manager_addteam
+    on(Manager_addgoalsandassist.team_name_id=Manager_addteam.id)
+    where Manager_addgoalsandassist.tour_name_id=%d and Player is NOT 'NULL'
+    GROUP by Manager_addgoalsandassist.assist_name
+    ORDER By Assists DESC """ %(int(tour_id.id)))
+    top_assist_dict = {}
+    top_assist_dict = dictfetchall(assist_cursor)
+    print(top_assist_dict)
+    return render(request,'Manager/top_assist.html',{'top_assist_dict':top_assist_dict,'tour_id':tour_id})

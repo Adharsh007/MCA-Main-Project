@@ -13,14 +13,19 @@
 
 <h1>{{tour_id}} Standings</h1> <br>
 
+<form  action="/pdf" method="post">
+  {%csrf_token%}
+
+<input type="hidden" name="tour_id" id="tour_id" value="{{tour_id}}">
 {% if temp_store%}
-  <table class="table">
+<table class="table">
     <thead>
       <th>Team Name</th>
       <th>Played</th>
       <th>Won</th>
       <th>Lost</th>
       <th>Points</th>
+
     </thead>
     {%for t in temp_store %}
     <tr>
@@ -29,6 +34,7 @@
       <td>{{t.wins}}</td>
       <td>{{t.loss}}</td>
       <td>{{t.Points}}</td>
+
     </tr>
     {%endfor%}
   </table>
@@ -36,5 +42,8 @@
   <p>No Standings Available</p>
 {%endif%}
 
+<input type="submit" formtarget="_blank" name="click" value="click">
+
 </div>
+</form>
 {%endblock%}

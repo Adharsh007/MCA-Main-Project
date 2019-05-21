@@ -105,3 +105,26 @@ class AddPoints(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+#model for adding goals and assust
+class AddGoalsandAssist(models.Model):
+    tour_name= models.ForeignKey(AddTournments,on_delete=models.CASCADE)
+    matchname = models.ForeignKey(AddFixture_table,on_delete=models.CASCADE)
+    Scorer_name = models.CharField(max_length=20)
+    assist_name = models.CharField(max_length=20, blank=True , null=True)
+    team_name = models.ForeignKey(AddTeam,on_delete=models.CASCADE)
+    g_time = models.CharField(max_length=20)
+
+    def __str__(self):
+        return str(self.id)
+
+#model for goal keeper saves
+class AddGoalKeeperSaves(models.Model):
+    tour_name= models.ForeignKey(AddTournments,on_delete=models.CASCADE)
+    matchname = models.ForeignKey(AddFixture_table,on_delete=models.CASCADE)
+    gk_names = models.CharField(max_length=20)
+    saves = models.IntegerField()
+    team_name = models.ForeignKey(AddTeam,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.id)

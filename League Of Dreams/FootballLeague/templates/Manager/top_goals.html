@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+{% extends 'Manager/indexbase.html'%}
+{%load staticfiles%}
+
+
+
+{% block indexblock%}
+
+<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+
+<div class="container">
+  <h3>{{tour_id}} Top Goalers List</h3> <br>
+  {%if top_goal_dict%}
+    <table class="table">
+      <thead>
+        <th>Player</th>
+        <th> Goals</th>
+        <th>Team</th>
+      </thead>
+      {%for t in top_goal_dict %}
+      <tr>
+        <td>{{t.Player}}</td>
+        <td>{{t.Goals}}</td>
+        <td>{{t.Team}}</td>
+      </tr>
+      {%endfor%}
+  </table>
+  {%else%}
+  <p>No Rankings Avaliable</p>
+  {%endif%}
+
+
+
+</div>
+{%endblock%}

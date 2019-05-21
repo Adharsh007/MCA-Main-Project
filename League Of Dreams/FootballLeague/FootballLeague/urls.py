@@ -53,9 +53,20 @@ urlpatterns = [
     url(r'^result/(?P<id>\d+)/$', views.result_list),
     url(r'^about', views.show_about),
     url(r'^contact', views.show_contact),
-
-
-
+    url(r'^pdf', views.pdf_view),
+    url(r'^galist', views.goals_assist_tour_list),
+    url(r'^add_ga/(?P<id>\d+)/$', views.add_goals_assists),
+    url(r'^addganda', views.ganda_table),
+    url(r'^s_tour_list', views.save_tour_list),
+    url(r'^saves/(?P<id>\d+)/$', views.saves_list),
+    url(r'^savestable', views.goalkeeper),
+    url(r'^t_list_goals', views.tourlist_goals),
+    url(r'^t_saves', views.t_saves_tourlist),
+    url(r'^t_assist', views.t_assist_tourlist),
+    #url(r'^t_gk', views.t_gk_tourlist),
+    url(r'^top_goals/(?P<id>\d+)/$', views.top_goals_list),
+    url(r'^top_sav/(?P<id>\d+)/$', views.top_gk_list),
+    url(r'^top_assist/(?P<id>\d+)/$', views.top_assist_list),
 ]
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

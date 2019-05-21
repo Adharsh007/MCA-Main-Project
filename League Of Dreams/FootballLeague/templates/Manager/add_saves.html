@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+{% extends 'Manager/adminbase.html'%}
+
+{%load staticfiles%}
+
+
+<link rel="stylesheet" href="{%static 'css/home.css' %}">
+
+{% load crispy_forms_tags %}
+
+{% block adminblock  %}
+
+
+
+<main role="main" class="container">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+
+            <div class="card">
+                <div class="col-sm-3 col-md-5 col-lg-12">
+                <div class="panel panel-default">
+                <div class="panel-body">
+
+
+                <form  method="post" autocomplete="off" action="/savestable">
+                  {%csrf_token%}
+                  <h3>Add Saves</h3>
+                  <div class="form-row">
+                            <div class="form-group col-md-12 mb-0">
+                              <h4> Tournment Name</h4>
+                              <input type="text" name="trname" id="trname" value="{{tour_id}}">
+                            </div>
+                          </div>
+                  <div class="form-row">
+                        <div class="form-group col-md-12 mb-0">
+                            <h4> Select Match Name </h4>
+                            <select title="Match Name" class="form-control" id="matchname" name="matchname" value="matchname">
+                                {% for p in point_dict %}
+                                    <option value="{{p.match_name}}">{{p.match_name}}</option>
+                                {%endfor%}
+                            </select>
+        						      </div>
+
+                  </div>
+
+                  <div class="form-row">
+                            <div class="form-group col-md-6 mb-0">
+                              <h4> Goal Keeper Name</h4>
+                              <input type="text" name="gname" id="gname" value="">
+                            </div>
+
+                            <div class="form-group col-md-6 mb-0">
+                              <h4> No of Saves</h4>
+                              <input type="text" name="saves" id="saves" value="">
+                            </div>
+                          </div>
+
+                          <div class="form-row">
+
+                            <div class="form-group col-md-12 mb-0">
+                                      <h4> Team Name</h4>
+                                      <select title="Team name" class="form-control" id="teamnm" name="teamnm" value="teamnm">
+                                          {% for s in saves_dict %}
+                                            <option value="{{s.team_name}}">{{s.team_name}}</option>
+                                            {%endfor%}
+                                          </select>
+                                    </div>
+                            </div>
+
+
+                <div class="form-row">
+                  <div class="form-group col-md-12 mb-0">
+                  <button type="submit" class="btn btn-primary" id="register">Submit</button>
+                </div>
+
+                </div>
+
+
+                </form>
+
+
+                </div>
+                </div>
+                 </div>
+            </div>
+        </div>
+
+                <div class="col-md-3"></div>
+
+        </div>
+    </main>
+{%endblock%}
+<script>
+
+
+function insRow(id) {
+    var filas = document.getElementById("myTable").rows.length;
+    var x = document.getElementById(id).insertRow(filas);
+    var y = x.insertCell(0);
+    var z = x.insertCell(1);
+    y.innerHTML = '<input type="text" id="fname">';
+
+}
+</script>

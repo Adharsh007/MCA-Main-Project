@@ -33,3 +33,11 @@ admin.site.register(AddFixture_table,AddFixture_tableAdmin)
 class AddPointsAdmin(admin.ModelAdmin):
     list_display = ['tourn_name_id','m_name','team_one','team_two','team_1_goal','team_2_goal','winner','looser','status']
 admin.site.register(AddPoints,AddPointsAdmin)
+
+class AddGoalsandAssistAdmin(admin.ModelAdmin):
+    list_display = ['tour_name','matchname','Scorer_name','assist_name','team_name','g_time']
+admin.site.register(AddGoalsandAssist,AddGoalsandAssistAdmin)
+
+class AddGoalKeeperSavesAdmin(admin.ModelAdmin):
+    list_display = ['tour_name','matchname','gk_names','saves','team_name']
+admin.site.register(AddGoalKeeperSaves,AddGoalKeeperSavesAdmin)

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{% extends 'Manager/indexbase.html'%}
+
+{%load staticfiles%}
+
+<link rel="stylesheet" href="{%static 'css/home.css' %}">
+
+{% load crispy_forms_tags %}
+
+{% block indexblock%}
+
+<div class="jumbotron">
+  <p>Please select the Tournment</p>
+{% for as in top_save_dict%}
+    <!-- <p  class="btn btn-primary"> <a href="/top_sav/{{s.id}}">{{as.t_name}}</a></p> &nbsp &nbsp &nbsp &nbsp &nbsp -->
+    <p  class="btn btn-primary"> <a href="/top_sav/{{as.id}}">{{as.t_name}}</a></p> &nbsp &nbsp &nbsp &nbsp &nbsp
+  {%endfor%}
+</div>
+
+
+
+
+{%endblock%}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+{% extends 'Manager/indexbase.html'%}
+{%load staticfiles%}
+
+
+
+{% block indexblock%}
+
+<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+
+<div class="container">
+  <h3>{{tour_id}} Top Assist List</h3> <br>
+  {%if top_assist_dict%}
+  <table class="table">
+    <thead>
+      <th>Player</th>
+      <th>Assists</th>
+      <th>Team</th>
+    </thead>
+    {%for t in top_assist_dict %}
+    <tr>
+      <td>{{t.Player}}</td>
+      <td>{{t.Assists}}</td>
+      <td>{{t.Team}}</td>
+    </tr>
+    {%endfor%}
+  </table>
+
+  {%else%}
+  <p>No List Available</p>
+  {%endif%}
+
+</div>
+{%endblock%}

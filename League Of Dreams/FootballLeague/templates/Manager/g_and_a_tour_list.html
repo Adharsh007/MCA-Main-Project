@@ -11,12 +11,8 @@
 
 <div class="jumbotron">
   <p>Please select the Tournment</p>
-{% for t in tourlist_dict%}
-    <p  class="btn btn-primary"> <a href="/addfixture/{{t.id}}">{{t.t_name}}</a></p> &nbsp &nbsp &nbsp &nbsp &nbsp
+{% for ga in goals_assist_dict%}
+    <p  class="btn btn-primary"> <a href="/add_ga/{{ga.id}}">{{ga.t_name}}</a></p> &nbsp &nbsp &nbsp &nbsp &nbsp
   {%endfor%}
 </div>
-
-
-
-
 {%endblock%}
