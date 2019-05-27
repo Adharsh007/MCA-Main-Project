@@ -7,16 +7,21 @@
 
 {% block indexblock%}
 
-<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+<!-- <link rel="stylesheet" href="{%static 'css/guest.css' %}"> -->
 
-<div class="container">
+<div class="container_news">
+<div class="row">
+
 
 {% for clubs in myclubs %}
+<div class="col-md-4">
 
  <a href="/player-list/{{clubs.id}}"> <h2>{{clubs.team_name}}</h2> </a>
- <a href="/player-list/{{clubs.id}}"> <img src="{{clubs.team_logo.url}}" > </a>
+ <a href="/player-list/{{clubs.id}}"> <img id="newssimg" src="{{clubs.team_logo.url}}" > </a>
+</div>
 
 {%endfor%}
+</div>
 
 </div>
 {%endblock%}

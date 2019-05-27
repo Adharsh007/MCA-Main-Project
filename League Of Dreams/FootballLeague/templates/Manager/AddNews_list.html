@@ -7,14 +7,33 @@
 
 {% block indexblock%}
 
-<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+<!-- <link rel="stylesheet" href="{%static 'css/guest.css' %}"> -->
 
-<div class="container">
-    {% for mynews in AddNews_list%}
+<style >
+div.container_onlynews {
+      color: black;
+      /* background-color: #f5f5f5; */
+      width: 1308px;
+      height: 605px;
+      overflow: auto;
+      /* margin-left: 38px; */
+      margin: 48px;
+  }
+
+</style>
+
+
+<div class="container_onlynews">
+  <div class="row">
+ {% for mynews in AddNews_list%}
+    <div class="col-md-4">
       <h2>{{mynews.created}}</h2>
-      <a href="/{{mynews.id}}">  <img src="{{mynews.news_image.url}}"> </a>
+      <a href="/{{mynews.id}}">  <img id="newssimg" src="{{mynews.news_image.url}}"> </a>
       <h2> <a href="/{{mynews.id}}"> {{mynews.news_head | truncatewords:10 }}</a> </h2> <br>
+    </div>
       {% endfor %}
+    </div>
+
 </div>
 
 

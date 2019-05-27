@@ -16,6 +16,10 @@ from Manager.utils import *
 def index_view(request):
     return render(request,'manager/index.html')
 
+#to display the new loading page
+def load_view(request):
+    return render(request,'manager/load.html')
+
 #to display data from the user table for signup
 def signup_view(request):
     form = SignUpForm()

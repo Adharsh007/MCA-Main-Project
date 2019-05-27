@@ -21,7 +21,9 @@ from Manager import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', views.index_view),
+    #url(r'^$', views.index_view),
+    url(r'^index', views.index_view),
+    url(r'^$', views.load_view),
     url(r'^signup', views.signup_view),
     url(r'^login', views.login_view),
     url(r'^home', views.home_view),
