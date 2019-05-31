@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+{% extends 'Manager/indexbase.html'%}
+{%load staticfiles%}
+
+
+
+{% block indexblock%}
+
+<style>
+div.container_player_profile {
+      color: black;
+      /* background-color: #f5f5f5; */
+      width: 1308px;
+      height: 605px;
+      overflow: auto;
+      /* margin-left: 38px; */
+      margin: 48px;
+
+  }
+</style>
+
+<!-- <link rel="stylesheet" href="{%static 'css/guest.css' %}"> -->
+
+<div class="container_player_profile">
+
+ {% for p in player_profile_dict %}
+
+ <h1>Name: {{p.name}}</h1>
+ <h1>Team: {{p.team_name}}</h1>
+ <h1>Age: {{p.age}}</h1>
+ <h1>Jersey Number: {{p.jersy_no}}</h1>
+ <h1>Position: {{p.position}}</h1>
+ <h1>Contact number: {{p.contact_no}}</h1>
+ <h1>Address: {{p.address}}</h1> <br>
+ <img style="height:50%; width:50%" src="{{p.upload_photo.url}}">
+
+
+
+ {%endfor%}
+
+</div>
+{%endblock%}

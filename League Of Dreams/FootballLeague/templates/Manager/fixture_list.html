@@ -7,6 +7,21 @@
 
 {% block indexblock%}
 
+<style >
+.container {
+  /* margin-right: auto;
+  margin-left: auto;
+  padding-left: 15px;
+  padding-right: 15px; */
+  color: aliceblue;
+  width: 1308px;
+  height: 605px;
+  overflow: auto;
+  margin: 48px;
+}
+
+</style>
+
 <link rel="stylesheet" href="{%static 'css/guest.css' %}">
 
 <div class="container">
@@ -23,7 +38,7 @@
     </thead>
     {%for f in fixture_dict%}
     <tr>
-      <td>{{f.match_date}}</td>
+      <td style="height:80px;">{{f.match_date}}</td>
       <td>{{f.match_time}}</td>
       <td>{{f.team_one}}</td>
       <td>{{f.team_two}}</td>

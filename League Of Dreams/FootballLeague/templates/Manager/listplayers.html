@@ -7,13 +7,28 @@
 
 {% block indexblock%}
 
-<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+<style>
+div.container_players {
+      color: black;
+      /* background-color: #f5f5f5; */
+      width: 1308px;
+      height: 605px;
+      overflow: auto;
+      /* margin-left: 38px; */
+      margin: 48px;
+  }
+</style>
 
-<div class="container">
+<!-- <link rel="stylesheet" href="{%static 'css/guest.css' %}"> -->
+
+<div class="container_players">
+  <div class="row">
  {% for player in playerlist%}
- <h1>{{player.first_name}}</h1>
- <img src="{{player.upload_photo.url}}">
+ <div class="col-md-4">
+ <a href="/player_detail/{{player.id}}"><h1>{{player.first_name}}</h1></a>
+ <a href="/player_detail/{{player.id}}"><img id="newssimg" src="{{player.upload_photo.url}}"></a>
+ </div>
  {%endfor%}
-
+  </div>
 </div>
 {%endblock%}

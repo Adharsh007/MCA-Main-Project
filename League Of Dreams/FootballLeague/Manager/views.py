@@ -9,6 +9,7 @@ from django.views.generic import ListView,DetailView
 from Manager import config
 import itertools
 from Manager.utils import *
+import datetime
 
 # Create your views here.
 
@@ -180,6 +181,33 @@ def playerlist_view(request, id):
         playerlist = AddPlayer.objects.filter(team_name=team_id.id)
         print(playerlist)
         return render(request,'Manager/listplayers.html',{'playerlist':playerlist})
+
+#display the details of players
+def playerdetail_view(request,id):
+    if request.method == 'GET':
+        print("inside Player profile")
+        player = AddPlayer.objects.get(id=id)
+        player_id = player.id
+        #print(player.id)class="img-responsive" style="width: 100%; float: left; margin-right: 10px;"
+        player_cursor = connection.cursor()
+        player_cursor.execute("""select Manager_addplayer.first_name || ' ' || Manager_addplayer.last_name As name,
+	           Manager_addteam.team_name,
+	           Manager_addplayer.age,
+	           Manager_addplayer.contact_no,
+	           Manager_addplayer.jersy_no,
+	           Manager_addplayer.position,
+	           Manager_addplayer.address,
+	           Manager_addplayer.upload_photo
+               from Manager_addteam
+               left outer join Manager_addplayer
+               on (Manager_addteam.id=Manager_addplayer.team_name_id)
+               WHERE Manager_addplayer.id=%d """%(player_id))
+        player_profile_dict ={}
+        player_profile_dict = dictfetchall(player_cursor)
+        print(player_profile_dict)
+        return render(request,'Manager/player_profile.html',{'player_profile_dict':player_profile_dict})
+
+
 
 #Add tournmets from the admin home page
 def addtournment_view(request):
@@ -500,6 +528,15 @@ def standing_list(request,id):
 
 #view shows list of available tournmets while click on fixture tab from index page
 def fixture_tour_list(request):
+    print("inside fixture")
+    f_date=datetime.datetime.now()
+    date=f_date.strftime('%Y-%m-%d')
+    print(date)
+    s=str(date)
+    print("string of date is")
+    print(s)
+    print(type(date))
+    print(type(s))
     tourlist_cursor =connection.cursor()
     tourlist_cursor.execute("""
     SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
@@ -509,8 +546,24 @@ def fixture_tour_list(request):
     """)
     tourlist_dict = {}
     tourlist_dict =dictfetchall(tourlist_cursor)
-    print(tourlist_dict)
-    return render(request,'Manager/fixture_tour_list.html',{'tourlist_dict':tourlist_dict})
+    #print(tourlist_dict)
+
+    today_fixture_cursor = connection.cursor()
+    today_fixture_cursor.execute("""SELECT Manager_addtournments.t_name,
+	   Manager_addfixture_table.match_date,
+	   Manager_addfixture_table.match_time,
+	   Manager_addfixture_table.team_one,
+	   Manager_addfixture_table.team_two,
+	   Manager_addfixture_table.venue
+    from Manager_addtournments left OUTER join Manager_addfixture_table
+    on(Manager_addtournments.id=Manager_addfixture_table.tr_name_id)
+    WHERE Manager_addfixture_table.match_date=%s""" %(s))
+    today_dict={}
+    today_dict =dictfetchall(today_fixture_cursor)
+    print(today_dict)
+
+
+    return render(request,'Manager/fixture_tour_list.html',{'tourlist_dict':tourlist_dict, 'today_dict':today_dict})
 
 
 

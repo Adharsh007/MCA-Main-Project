@@ -38,6 +38,7 @@ urlpatterns = [
     url(r'^payment', views.makepayment_view),
     url(r'^listclub', views.ClubListView.as_view()),
     url(r'^player-list/(?P<id>\d+)/$', views.playerlist_view),
+    url(r'^player_detail/(?P<id>\d+)/$',views.playerdetail_view),
     url(r'^tournmentadd', views.addtournment_view),
     url(r'^registertour/(?P<id>\d+)/$', views.tournmentreg),
     url(r'^showtour', views.show_tournments_view),
@@ -69,6 +70,7 @@ urlpatterns = [
     url(r'^top_goals/(?P<id>\d+)/$', views.top_goals_list),
     url(r'^top_sav/(?P<id>\d+)/$', views.top_gk_list),
     url(r'^top_assist/(?P<id>\d+)/$', views.top_assist_list),
+
 ]
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

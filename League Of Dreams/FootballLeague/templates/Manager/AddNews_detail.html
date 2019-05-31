@@ -6,12 +6,25 @@
 
 {% block indexblock%}
 
+<style>
+
+div.container_dnews{
+  margin-left: 54px;
+  overflow: auto;
+  width: 1308px;
+  height: 605px;
+}
+
+
+
+</style>
+
 <link rel="stylesheet" href="{%static 'css/guest.css' %}">
 
-<div class="container">
-    <h1>{{mynews.news_head}}</h1>
-    <img src="{{mynews.news_image.url}}">
-    <p>{{mynews.body}}</p>
+<div class="container_dnews">
+    <h1 style="color: aliceblue;">{{mynews.news_head}}</h1>
+    <img style="width: 52%; height: 50%;" src="{{mynews.news_image.url}}">
+    <p style="color: aliceblue;">{{mynews.body}}</p>
 </div>
 
 

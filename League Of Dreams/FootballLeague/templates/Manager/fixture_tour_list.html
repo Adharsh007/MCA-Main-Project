@@ -9,6 +9,35 @@
 
 {% block indexblock%}
 
+<style>
+
+.jumbotron{
+
+  height: 200px;
+  width: 493px;
+  margin-top: 22px;
+  margin-left: 429px;
+  background: whitesmoke;
+
+}
+
+.jumbotron p {
+    margin-bottom: 16px;
+    font-size: 26px;
+    font-weight: 200;
+}
+
+a {
+
+    text-decoration: none;
+    color: aliceblue;
+}
+
+
+
+
+</style>
+
 <div class="jumbotron">
   <p>Please select the Tournment</p>
 {% for t in tourlist_dict%}
@@ -16,7 +45,8 @@
   {%endfor%}
 </div>
 
-
-
+{% for today in today_dict %}
+{{today.venue}}
+{%endfor%}
 
 {%endblock%}
