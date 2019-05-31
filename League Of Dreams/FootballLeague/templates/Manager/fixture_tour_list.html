@@ -3,7 +3,7 @@
 
 {%load staticfiles%}
 
-<link rel="stylesheet" href="{%static 'css/home.css' %}">
+<!-- <link rel="stylesheet" href="{%static 'css/home.css' %}"> -->
 
 {% load crispy_forms_tags %}
 
@@ -14,7 +14,7 @@
 .jumbotron{
 
   height: 200px;
-  width: 493px;
+  width: 420px;
   margin-top: 22px;
   margin-left: 429px;
   background: whitesmoke;
@@ -33,7 +33,18 @@ a {
     color: aliceblue;
 }
 
+.container {
+  color: aliceblue;
+  width: 1308px;
+  height: 605px;
+  /* overflow: auto; */
+  margin: 48px;
 
+}
+
+body{
+  overflow: auto;
+}
 
 
 </style>
@@ -45,8 +56,40 @@ a {
   {%endfor%}
 </div>
 
-{% for today in today_dict %}
-{{today.venue}}
-{%endfor%}
+<!-- now we are displaying matches of the current date -->
+
+<div class="container">
+  <h3>Todays Matches</h3> <br>
+
+{%if today_dict%}
+  <table class="table">
+    <thead>
+      <th>Tournment Name</th>
+      <th>Time</th>
+      <th>Team 1 </th>
+      <th>Team 2</th>
+      <th>venue</th>
+    </thead>
+    {%for tdy in today_dict%}
+    <tr>
+      <td style="height:80px;">{{tdy.t_name}}</td>
+      <td>{{tdy.match_time}}</td>
+      <td>{{tdy.team_one}}</td>
+      <td>{{tdy.team_two}}</td>
+      <td>{{tdy.venue}}</td>
+    </tr>
+    {%endfor%}
+
+  </table>
+
+{%else%}
+  <p>No Matches Today</p>
+{%endif%}
+
+
+
+</div>
+
+
 
 {%endblock%}

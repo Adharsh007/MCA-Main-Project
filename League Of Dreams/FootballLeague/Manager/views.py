@@ -550,14 +550,14 @@ def fixture_tour_list(request):
 
     today_fixture_cursor = connection.cursor()
     today_fixture_cursor.execute("""SELECT Manager_addtournments.t_name,
-	   Manager_addfixture_table.match_date,
-	   Manager_addfixture_table.match_time,
-	   Manager_addfixture_table.team_one,
-	   Manager_addfixture_table.team_two,
-	   Manager_addfixture_table.venue
+	Manager_addfixture_table.match_date,
+	Manager_addfixture_table.match_time,
+	Manager_addfixture_table.team_one,
+	Manager_addfixture_table.team_two,
+	Manager_addfixture_table.venue
     from Manager_addtournments left OUTER join Manager_addfixture_table
     on(Manager_addtournments.id=Manager_addfixture_table.tr_name_id)
-    WHERE Manager_addfixture_table.match_date=%s""" %(s))
+    WHERE Manager_addfixture_table.match_date='%s' """ %(str(s)))
     today_dict={}
     today_dict =dictfetchall(today_fixture_cursor)
     print(today_dict)
