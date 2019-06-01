@@ -588,6 +588,12 @@ def fixture_list(request,id):
 
 #view shows list of available tournmets while click on Result tab from index page
 def result_tour_list(request):
+    f_date=datetime.datetime.now()
+    date=f_date.strftime('%Y-%m-%d')
+
+    s=str(date)
+
+
     result_cursor =connection.cursor()
     result_cursor.execute("""
     SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
@@ -597,8 +603,29 @@ def result_tour_list(request):
     """)
     r_dict = {}
     r_dict =dictfetchall(result_cursor)
-    print(r_dict)
-    return render(request,'Manager/result_tour_list.html',{'r_dict':r_dict})
+    #print(r_dict)
+
+
+    today_result_cursor = connection.cursor()
+    today_result_cursor.execute("""SELECT Manager_addtournments.t_name,
+	   Manager_addfixture_table.match_date,
+	   Manager_addfixture_table.match_name,
+	   Manager_addpoints.team_one,
+	   Manager_addpoints.team_1_goal,
+	   Manager_addpoints.team_two,
+	   Manager_addpoints.team_2_goal,
+	   Manager_addpoints.winner
+       from Manager_addtournments left OUTER join Manager_addfixture_table
+       on(Manager_addtournments.id=Manager_addfixture_table.tr_name_id)
+       LEFT outer join Manager_addpoints
+       on(Manager_addfixture_table.id=Manager_addpoints.m_name_id)
+       WHERE Manager_addfixture_table.match_date='%s' """ %(str(s)))
+
+
+    today_rdict={}
+    today_rdict =dictfetchall(today_result_cursor)
+    print(today_rdict)
+    return render(request,'Manager/result_tour_list.html',{'r_dict':r_dict,'today_rdict':today_rdict})
 
 #view shows fixtures respective to the tournments
 def result_list(request,id):

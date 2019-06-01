@@ -3,11 +3,52 @@
 
 {%load staticfiles%}
 
-<link rel="stylesheet" href="{%static 'css/home.css' %}">
+<!-- <link rel="stylesheet" href="{%static 'css/home.css' %}"> -->
 
 {% load crispy_forms_tags %}
 
 {% block indexblock%}
+
+<style>
+
+.jumbotron{
+
+  height: 200px;
+  width: 420px;
+  margin-top: 22px;
+  margin-left: 429px;
+  background: whitesmoke;
+
+}
+
+.jumbotron p {
+    margin-bottom: 16px;
+    font-size: 26px;
+    font-weight: 200;
+}
+
+a {
+
+    text-decoration: none;
+    color: aliceblue;
+}
+
+.container {
+  color: aliceblue;
+  width: 1308px;
+  height: 605px;
+  /* overflow: auto; */
+  margin: 48px;
+
+}
+
+body{
+  overflow: auto;
+}
+
+
+</style>
+
 
 <div class="jumbotron">
   <p>Please select the Tournment</p>
@@ -17,6 +58,38 @@
 </div>
 
 
+<!-- now we are displaying matches of the current date -->
 
+<div class="container">
+  <h3>Todays Results</h3> <br>
 
+{%if today_rdict %}
+  <table class="table">
+    <thead style="font-size:22px">
+      <th>Tournment Name</th>
+      <th>Match Name</th>
+      <th>Team 1 </th>
+      <th>Team1 Score</th>
+      <th>Team 2</th>
+      <th>Team2 Score</th>
+      <th>Winner</th>
+    </thead>
+    {%for tdy in today_rdict%}
+    <tr style="height:80px;">
+      <td>{{tdy.t_name}}</td>
+      <td>{{tdy.match_name}}</td>
+      <td>{{tdy.team_one}}</td>
+      <td>{{tdy.team_1_goal}}</td>
+      <td>{{tdy.team_two}}</td>
+      <td>{{tdy.team_2_goal}}</td>
+      <td>{{tdy.winner}}</td>
+    </tr>
+    {%endfor%}
+
+  </table>
+
+{%else%}
+  <p>No Matches Today</p>
+{%endif%}
+</div>
 {%endblock%}

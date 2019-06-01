@@ -7,19 +7,34 @@
 
 {% block indexblock%}
 
-<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+<!-- <link rel="stylesheet" href="{%static 'css/guest.css' %}"> -->
+
+<style >
+.container {
+  color: aliceblue;
+  width: 1308px;
+  height: 605px;
+
+  margin: 48px;
+}
+
+body{
+  overflow: auto;
+}
+
+</style>
 
 <div class="container">
   <h3>{{tour_id}} Top Assist List</h3> <br>
   {%if top_assist_dict%}
   <table class="table">
-    <thead>
+      <thead style="font-size:22px;">
       <th>Player</th>
       <th>Assists</th>
       <th>Team</th>
     </thead>
     {%for t in top_assist_dict %}
-    <tr>
+    <tr style="font-size:18px;">
       <td>{{t.Player}}</td>
       <td>{{t.Assists}}</td>
       <td>{{t.Team}}</td>

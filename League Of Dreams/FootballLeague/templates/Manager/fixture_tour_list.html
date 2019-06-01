@@ -63,7 +63,7 @@ body{
 
 {%if today_dict%}
   <table class="table">
-    <thead>
+    <thead style="font-size:22px">
       <th>Tournment Name</th>
       <th>Time</th>
       <th>Team 1 </th>
@@ -71,8 +71,8 @@ body{
       <th>venue</th>
     </thead>
     {%for tdy in today_dict%}
-    <tr>
-      <td style="height:80px;">{{tdy.t_name}}</td>
+    <tr style="height:80px;">
+      <td>{{tdy.t_name}}</td>
       <td>{{tdy.match_time}}</td>
       <td>{{tdy.team_one}}</td>
       <td>{{tdy.team_two}}</td>

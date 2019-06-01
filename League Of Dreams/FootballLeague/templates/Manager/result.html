@@ -5,14 +5,28 @@
 
 {% block indexblock%}
 
-<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+<!-- <link rel="stylesheet" href="{%static 'css/guest.css' %}"> -->
+<style >
+.container {
+  color: aliceblue;
+  width: 1308px;
+  height: 605px;
+
+  margin: 48px;
+}
+
+body{
+  overflow: auto;
+}
+
+</style>
 
 <div class="container">
   <h3>{{tour_id}} Results</h3> <br>
 
   {%if result_dict%}
   <table class="table">
-    <thead>
+    <thead style="font-size:22px;">
       <th>Match Date</th>
       <th>Match Name</th>
       <th>Team 1</th>
@@ -22,8 +36,8 @@
       <th>Winner</th>
     </thead>
     {% for r in result_dict %}
-    <tr>
-      <td>{{r.match_date}}</td>
+    <tr style="font-size:18px;">
+      <td style="height:80px;">{{r.match_date}}</td>
       <td>{{r.match_name}}</td>
       <td>{{r.team_one}}</td>
       <td>{{r.team_1_goal}}</td>

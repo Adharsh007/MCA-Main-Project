@@ -9,6 +9,45 @@
 
 {% block indexblock%}
 
+<style>
+
+.jumbotron{
+
+  height: 200px;
+  width: 420px;
+  margin-top: 22px;
+  margin-left: 429px;
+  background: whitesmoke;
+
+}
+
+.jumbotron p {
+    margin-bottom: 16px;
+    font-size: 26px;
+    font-weight: 200;
+}
+
+a {
+
+    text-decoration: none;
+    color: aliceblue;
+}
+
+.container {
+  color: aliceblue;
+  width: 1308px;
+  height: 605px;
+  /* overflow: auto; */
+  margin: 48px;
+
+}
+
+body{
+  overflow: auto;
+}
+
+</style>
+
 <div class="jumbotron">
   <p>Please select the Tournment</p>
 {% for as in top_save_dict%}
