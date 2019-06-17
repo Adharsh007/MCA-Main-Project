@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-
+{%load staticfiles%}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,8 +11,23 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 
+<style media="screen">
+
+  .container-fluid{
+    height: 79px;
+    background-color: darkblue;
+  }
+
+  #icon{
+    height: 80px;
+    width: 145px;
+    margin-top: -19px;
+    margin-left: -14px;
+  }
 
 
+
+</style>
 
 </head>
 <body>
@@ -27,24 +42,25 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">Football.com</a>
+      <!-- <a class="navbar-brand" href="#">Football.com</a> -->
+      <a class="navbar-brand" href="/"> <img id="icon" src="{%static "images/logo.png" %}" class="img-responsive logo"</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
 
-        <li><a href="/tournmentadd"> Add Tournament  </a></li>
+        <li style="font-size: 20px;"><a href="/tournmentadd"> Add Tournament  </a></li>
 
-        <li><a href="/addnews"> Add News  </a></li>
+        <li style="font-size: 20px;"><a href="/addnews"> Add News  </a></li>
 
-        <li><a href="/tourlist"> Add Fixture  </a></li>
+        <li style="font-size: 20px;"><a href="/tourlist"> Add Fixture  </a></li>
 
-        <li><a href="/point_tourlist"> Add Points  </a></li>
+        <li style="font-size: 20px;"><a href="/point_tourlist"> Add Points  </a></li>
 
-        <li><a href="/galist"> Goals and Assists  </a></li>
+        <li style="font-size: 20px;"><a href="/galist"> Add Goals and Assists  </a></li>
 
-        <li><a href="/s_tour_list"> Saves </a></li>
+        <li style="font-size: 20px;"><a href="/s_tour_list">Add Saves </a></li>
 
 
 
@@ -52,7 +68,7 @@
     </ul>
 
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Logout</a></li>
+        <li style="font-size: 25px;"><a href="#">Logout</a></li>
 
       </ul>
     </div><!-- /.navbar-collapse -->

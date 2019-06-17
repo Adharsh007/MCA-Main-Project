@@ -41,3 +41,7 @@ admin.site.register(AddGoalsandAssist,AddGoalsandAssistAdmin)
 class AddGoalKeeperSavesAdmin(admin.ModelAdmin):
     list_display = ['tour_name','matchname','gk_names','saves','team_name']
 admin.site.register(AddGoalKeeperSaves,AddGoalKeeperSavesAdmin)
+
+class NewKeeperAdmin(admin.ModelAdmin):
+    list_display = ['tour_name','matchname','gk_name','saves','team_name']
+admin.site.register(NewKeeper,NewKeeperAdmin)

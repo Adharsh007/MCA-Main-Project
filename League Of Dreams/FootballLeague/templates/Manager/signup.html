@@ -1,28 +1,76 @@
 <!DOCTYPE html>
 
-{% extends 'Manager/signupbase.html'%}
+{% extends 'Manager/indexbase.html'%}
 {% load crispy_forms_tags %}
 
-{% block signupblock%}
+{%block indexblock %}
+
+<style>
+
+body{
+  overflow: auto;
+}
 
 
 
-<div class="card">
-            <div class="col-sm-3 col-md-5 col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                      <form method="post" autocomplete="off">
-                        <h1>Create an Account</h1> <br>
-                        {%csrf_token%}
-                        {{form|crispy}}
-                        {{profileform|crispy}}
-                        <br>
-                        <input type="submit" class="btn btn-primary" value="REGISTER">
+/* div.container{
+color: black;
+width: 1000px;
+height: 600px;
+margin-left:150px
+} */
 
-                      </form>
+.card{
+  /* color: black; */
+  width: 1000px;
+  height: 600px;
+  margin-left:-60px;
 
-                    </div>
+}
+
+body{
+  overflow: auto;
+}
+
+
+
+</style>
+
+<main role="main" class="sign_container">
+      <div class="row">
+        <div class="col-md-2"></div>
+
+        <div class="col-md-8">
+
+          <div class="card">
+                      <div class="col-sm-3 col-md-5 col-lg-12">
+                          <div class="panel panel-default">
+                              <div class="panel-body">
+                                <form method="post" autocomplete="off">
+                                  <h1>Create an Account</h1> <br>
+                                  {%csrf_token%}
+                                  {{form|crispy}}
+                                  {{profileform|crispy}}
+                                  <br>
+                                  <input type="submit" class="btn btn-primary" value="REGISTER">
+
+                                </form>
+
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
                 </div>
-            </div>
-        </div>
-      {%endblock%}
+
+        <div class="col-md-2"></div>
+
+      </div>
+    </main>
+
+
+
+
+
+
+{% endblock %}

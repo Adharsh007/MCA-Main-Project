@@ -10,6 +10,17 @@ from Manager import config
 import itertools
 from Manager.utils import *
 import datetime
+from django.contrib import messages
+import json
+from django.http import JsonResponse
+import numpy as np
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import authentication, permissions
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+
 
 # Create your views here.
 
@@ -48,27 +59,67 @@ def home_view(request):
         un = request.POST.get('uname')
         pw = request.POST.get('pwd')
         user = authenticate(request, username=un, password=pw)
-        config.userid = user.id
-        user_obj = User.objects.get(id=config.userid)
-        print("inside home view")
-        print(config.userid)
-        print(user_obj)
-        request.session['loginid'] = user.id
+
 
 
         if user:
+            config.userid = user.id
+            user_obj = User.objects.get(id=config.userid)
+            print("inside home view")
+            print(config.userid)
+            print(user_obj)
+            request.session['loginid'] = user.id
             if user.is_superuser == 1 and user.is_staff ==1:
-                return render(request,'Manager/adminpage.html')
+                tourlist_cursor =connection.cursor()
+                tourlist_cursor.execute("""
+                SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
+            	LEFT OUTER JOIN Manager_addtournments
+            	on
+            	(Manager_tournmentregistration.tr_name_id=Manager_addtournments.id)
+                """)
+                tourlist_dict = {}
+                tourlist_dict =dictfetchall(tourlist_cursor)
+                print(tourlist_dict)
+
+                # counting number of team registred for each tournment
+                team_count_cursor = connection.cursor()
+                team_count_cursor.execute("""select  Manager_addtournments.id,
+		        Manager_addtournments.t_name,
+		        count(Manager_tournmentregistration.tr_name_id) As count
+                from  Manager_addtournments LEFT OUTER join Manager_tournmentregistration
+                on (Manager_addtournments.id = Manager_tournmentregistration.tr_name_id)
+                GROUP by Manager_addtournments.t_name""")
+                team_list_new_dict = {}
+                team_list_new_dict = dictfetchall(team_count_cursor)
+                print("Team list is")
+                print(team_list_new_dict)
+                print("**** # Now u r time *****")
+                #print(team_list_new_dict[t_name])
+                label =[]
+                for i in range(len(team_list_new_dict)):
+                    label.append(team_list_new_dict[i]['t_name'])
+
+                print(label)
+
+                count = []
+                for i in range(len(team_list_new_dict)):
+                    count.append(team_list_new_dict[i]['count'])
+                print(count)
+
+
+
+
+
+                return render(request,'Manager/adminpage.html',{'tourlist_dict':tourlist_dict, 'team_list_new_dict':team_list_new_dict})
             elif user:
-                #need
-                #team_obj = AddTeam.objects.get(username=user_obj)
-                #config.teamid = team_obj.id
                 return render(request, 'Manager/home.html')
             else:
                 return HttpResponse('Invalid')
 
         else:
-            return HttpResponse('Invalid')
+            # return HttpResponse('Invalid')
+            messages.error(request, 'Invalid credentials !')
+            return redirect('/login')
 
     return render(request, 'Manager/home.html')
 
@@ -457,13 +508,6 @@ def standing_list(request,id):
     print("Name of the tournmet is")
     print(type(tour_id))
     print(tour_id)
-
-
-    """"x = AddPoints.objects.values_list('team_one',flat=True)
-    y = AddPoints.objects.values_list('team_two',flat=True)
-    z=x.union(y) #this is (1)
-    print("teams in  tournments are")
-    print(z) """
     #to find all the teams in clicked tournment
     team_list=connection.cursor()
     team_list.execute("""
@@ -984,3 +1028,191 @@ def top_assist_list(request, id):
     top_assist_dict = dictfetchall(assist_cursor)
     print(top_assist_dict)
     return render(request,'Manager/top_assist.html',{'top_assist_dict':top_assist_dict,'tour_id':tour_id})
+
+#using ajax in the standing ganda_table
+def aja_stand(request):
+    print("Ajax called")
+    if request.is_ajax() and request.GET:
+        tour_name= request.GET.get('name')
+        tour_id= AddTournments.objects.get(t_name=tour_name)
+        print(tour_name)
+        print(tour_id.id)
+        team_list=connection.cursor()
+        team_list.execute("""
+        SELECT Manager_addteam.id, Manager_addteam.team_name
+        FROM Manager_addteam
+        LEFT OUTER JOIN Manager_tournmentregistration
+        on (Manager_addteam.id= Manager_tournmentregistration.team_name_id)
+        where Manager_tournmentregistration.tr_name_id=%s"""%(int(tour_id.id)))
+
+        res = team_list.fetchall()
+        res_list = []
+        print("Team list")
+        for r in res:
+            t ={}
+            t['id']=r[0]
+            t['team_name']= r[1]
+            res_list.append(t)
+        print(res_list)
+        j=json.dumps(res_list)
+        team_list.close()  #closing cursor
+        return JsonResponse(res_list, safe=False)
+
+def aja_tour_goals(request):
+    #print("Inside tournment goals ajax")
+    if request.is_ajax() and request.GET:
+        tour_name= request.GET.get('name')
+        tour_id= AddTournments.objects.get(t_name=tour_name)
+        #print(tour_name)
+        #print(tour_id)
+        #print(tour_id.id)
+        tour_goals_cursor = connection.cursor()
+        tour_goals_cursor.execute("""
+        SELECT Manager_addtournments.t_name,
+	    count(Manager_addgoalsandassist.tour_name_id) As Goals
+        from Manager_addtournments left outer join Manager_addgoalsandassist
+        on(Manager_addtournments.id = Manager_addgoalsandassist.tour_name_id)
+        WHERE Manager_addtournments.id=%d"""%(int(tour_id.id)))
+        res =tour_goals_cursor.fetchall()
+        res_list = []
+        for r in res:
+            t = {}
+            t['t_name']=r[0]
+            t['Goals'] = r[1]
+            res_list.append(t)
+        #print(res_list)
+        j=json.dumps(res_list)
+        tour_goals_cursor.close()
+        return JsonResponse(res_list, safe=False)
+
+def aja_top_goals(request):
+    #print("Inside admin top scorer")
+    if request.is_ajax() and request.GET:
+        tour_name= request.GET.get('name')
+        tour_id= AddTournments.objects.get(t_name=tour_name)
+        #print(tour_name)
+        #print(tour_id)
+        #print(tour_id.id)
+        top_scorer_cursor=connection.cursor()
+        top_scorer_cursor.execute("""select Manager_addgoalsandassist.Scorer_name,
+	    count(Scorer_name) As Goals
+        from Manager_addgoalsandassist WHERE Manager_addgoalsandassist.tour_name_id=%d
+        GROUP by Manager_addgoalsandassist.Scorer_name
+        ORDER by Goals DESC"""%(int(tour_id.id)))
+        res1 =top_scorer_cursor.fetchall()
+        res_list1 = []
+        for r in res1:
+            t = {}
+            t['Scorer_name']=r[0]
+            t['Goals'] = r[1]
+            res_list1.append(t)
+        #print(res_list1)
+        j=json.dumps(res_list1)
+        top_scorer_cursor.close()
+        return JsonResponse(res_list1, safe=False)
+
+#display top assist in admin Page
+def aja_top_assist(request):
+    #print("inside ajax top assist")
+    if request.is_ajax() and request.GET:
+        tour_name= request.GET.get('name')
+        tour_id= AddTournments.objects.get(t_name=tour_name)
+        #print(tour_name)
+        #print(tour_id)
+        #print(tour_id.id)
+        top_assist_cursor=connection.cursor()
+        top_assist_cursor.execute("""select Manager_addgoalsandassist.assist_name,
+	    count(assist_name) As Assist
+        from Manager_addgoalsandassist
+		WHERE Manager_addgoalsandassist.assist_name is NOT 'NULL' and Manager_addgoalsandassist.tour_name_id=%d
+        GROUP by Manager_addgoalsandassist.assist_name
+        ORDER by Assist DESC"""%(int(tour_id.id)))
+        res1 =top_assist_cursor.fetchall()
+        res_list1 = []
+        for r in res1:
+            t = {}
+            t['assist_name']=r[0]
+            t['Assist'] = r[1]
+            res_list1.append(t)
+        print(res_list1)
+        j=json.dumps(res_list1)
+        top_assist_cursor.close()
+        return JsonResponse(res_list1, safe=False)
+
+def aja_top_gk(request):
+    print("inside ajax top goal GoalKeeper")
+    if request.is_ajax() and request.GET:
+        tour_name= request.GET.get('name')
+        tour_id= AddTournments.objects.get(t_name=tour_name)
+        print(tour_name)
+        print(tour_id)
+        print(tour_id.id)
+        admin_gk_cursor = connection.cursor()
+        admin_gk_cursor.execute("""select Manager_addgoalkeepersaves.gk_names,sum(saves) as "Saves" , Manager_addteam.team_name
+        from Manager_addgoalkeepersaves
+	    left OUTER JOIN Manager_addteam
+	    on(Manager_addgoalkeepersaves.team_name_id=Manager_addteam.id)
+        where Manager_addgoalkeepersaves.tour_name_id=%d
+        GROUP by Manager_addgoalkeepersaves.gk_names
+	    ORDER by Manager_addgoalkeepersaves.saves ASC""" %(int(tour_id.id)))
+
+        res1 =admin_gk_cursor.fetchall()
+        res_list1 = []
+        for r in res1:
+            t = {}
+            t['gk_name']=r[0]
+            t['Saves'] = r[1]
+            res_list1.append(t)
+        print(res_list1)
+        j=json.dumps(res_list1)
+        admin_gk_cursor.close()
+        return JsonResponse(res_list1, safe=False)
+
+#chart.js 1
+def get_data(request):
+    data = {
+        "Tournment":'EPL',
+        "Count": 10,
+    }
+    return JsonResponse(data)
+
+
+class ChartData(APIView):
+
+    authentication_classes = []
+    permission_classes = []
+
+    def get(self, request, format=None):
+        team_count_cursor = connection.cursor()
+        team_count_cursor.execute("""select  Manager_addtournments.id,
+		Manager_addtournments.t_name,
+		count(Manager_tournmentregistration.tr_name_id) As count
+        from  Manager_addtournments LEFT OUTER join Manager_tournmentregistration
+        on (Manager_addtournments.id = Manager_tournmentregistration.tr_name_id)
+        GROUP by Manager_addtournments.t_name""")
+        team_list_new_dict = {}
+        team_list_new_dict = dictfetchall(team_count_cursor)
+        print("Team list is")
+        print(team_list_new_dict)
+        label =[]
+        for i in range(len(team_list_new_dict)):
+            label.append(team_list_new_dict[i]['t_name'])
+
+        print(label)
+
+        count = []
+        for i in range(len(team_list_new_dict)):
+            count.append(team_list_new_dict[i]['count'])
+        print(count)
+
+
+
+
+        # labels = ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange']
+        labels = label
+        default_items = count
+        data={
+            "labels":labels,
+            "default":default_items,
+        }
+        return Response(data)

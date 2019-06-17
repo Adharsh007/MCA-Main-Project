@@ -45,6 +45,14 @@ div.container_standings {
 
 </style>
 
+<!-- <h1 style="color:aliceblue;">Select Tournment</h1>
+<select style="width:100px;" class="btn-primary dropdown" id="trr_name">
+  {% for t in tourlist_dict%}
+  <option value="{{t.t_name}}">{{t.t_name}}</option>
+  {%endfor%}
+</select> -->
+
+
 <div class="container_standings">
 
 <div class="jumbotron">
@@ -54,5 +62,52 @@ div.container_standings {
     {%endfor%}
 </div>
 
+<!-- <table id="example" class="table table-striped table-bordered" style="width:100%;">
+
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Team name</th>
+    </tr>
+
+  </thead>
+  <tbody>
+
+  </tbody>
+
+</table> -->
+
 </div>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function(){
+    $( "#trr_name" ).change(function() {
+    var name=$("#trr_name").val();
+    // alert(name);
+
+    $.ajax({
+      type:"GET",
+      url: '/ajaxx',
+      data: {
+        'name':name
+      },
+
+      success: function(data){
+        // alert(data[1].id);
+        $('#example td').remove();
+        for(i=0;i<data.length;i++){
+          $('#example').append('<tr><td>'+data[i].id+'</td><td>'+data[i].team_name+'</td></tr>')
+          }
+        }
+
+
+})
+
+});
+});
+
+</script>
+
 {%endblock%}

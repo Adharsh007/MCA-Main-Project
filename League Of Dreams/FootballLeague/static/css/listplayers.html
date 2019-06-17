@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+
+{% extends 'Manager/indexbase.html'%}
+{%load staticfiles%}
+
+
+
+{% block indexblock%}
+
+<link rel="stylesheet" href="{%static 'css/guest.css' %}">
+
+<div class="container">
+ {% for player in playerlist%}
+ <h1>{{player.first_name}}</h1>
+ <img src="{{player.upload_photo.url}}">
+ {%endfor%}
+
+</div>
+{%endblock%}

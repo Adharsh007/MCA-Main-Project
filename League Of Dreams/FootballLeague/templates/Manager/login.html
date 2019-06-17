@@ -28,7 +28,22 @@
         <button type="submit" class="btn btn-primary btn-block btn-large">Log In</button>
     </form>
     <br>
-   <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <div class="row">
+            {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">
+                  <center><p style="color: yellow";>{{ message }}</p></center>
+
+              </div>
+            {% endfor %}
+          {% endif %}
+
+        </div>
+
+
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 <!-- animation social -->
 <ins class="adsbygoogle"
      style="display:block"

@@ -70,6 +70,18 @@ urlpatterns = [
     url(r'^top_goals/(?P<id>\d+)/$', views.top_goals_list),
     url(r'^top_sav/(?P<id>\d+)/$', views.top_gk_list),
     url(r'^top_assist/(?P<id>\d+)/$', views.top_assist_list),
+    url(r'^ajaxx', views.aja_stand),
+    url(r'^tournment_goals', views.aja_tour_goals),
+    url(r'^admin_top_scorer', views.aja_top_goals),
+    url(r'^admin_top_assist', views.aja_top_assist),
+    url(r'^admin_top_gk', views.aja_top_gk),
+    url(r'^data', views.get_data),
+    url(r'^chartdata', views.ChartData.as_view()),
+
+
+
+
+
 
 ]
 if settings.DEBUG:

@@ -38,7 +38,7 @@ class AddPlayer(models.Model):
     upload_photo = models.ImageField(upload_to='players/')
 
     def __str__(self):
-        return self.first_name
+        return str(self.id)
 
 
 
@@ -123,6 +123,17 @@ class AddGoalKeeperSaves(models.Model):
     tour_name= models.ForeignKey(AddTournments,on_delete=models.CASCADE)
     matchname = models.ForeignKey(AddFixture_table,on_delete=models.CASCADE)
     gk_names = models.CharField(max_length=20)
+    saves = models.IntegerField()
+    team_name = models.ForeignKey(AddTeam,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.id)
+
+#model for new goalkeeper
+class NewKeeper(models.Model):
+    tour_name= models.ForeignKey(AddTournments,on_delete=models.CASCADE)
+    matchname = models.ForeignKey(AddFixture_table,on_delete=models.CASCADE)
+    gk_name = models.ForeignKey(AddPlayer,on_delete=models.CASCADE)
     saves = models.IntegerField()
     team_name = models.ForeignKey(AddTeam,on_delete=models.CASCADE)
 
