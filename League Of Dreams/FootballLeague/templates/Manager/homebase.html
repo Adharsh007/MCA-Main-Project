@@ -13,9 +13,28 @@
 
     <link rel="stylesheet" href="{%static 'css/home.css' %}">
 
+    <style media="screen">
+
+      .container-fluid{
+        height: 79px;
+        background-color: darkblue;
+      }
+
+      #icon{
+        height: 80px;
+        width: 145px;
+        margin-top: -19px;
+        margin-left: -14px;
+      }
+
+
+
+    </style>
+
+
 
 </head>
-<body style="background: #F3FAF3;">
+<body>
 
 <nav class="navbar navbar-default navbar-inverse">
   <div class="container-fluid">
@@ -27,7 +46,8 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">Football.com</a>
+      <!-- <a class="navbar-brand" href="#">Football.com</a> -->
+      <a class="navbar-brand" href="/"> <img id="icon" src="{%static "images/logo.png" %}" class="img-responsive logo"</a>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -36,16 +56,16 @@
        <!-- <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
         <li><a href="#">Link</a></li> -->
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Team Registration <span class="caret"></span></a>
+          <a style="font-size: 20px;" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Team Registration <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="/addteam">Add Team</a></li>
-            <li><a href="/addplayer">Add Players</a></li>
-            <li><a href="/myteam">View Team</a></li>
+            <li style="font-size: 20px;"><a href="/addteam">Add Team</a></li>
+            <li style="font-size: 20px;"><a href="/addplayer">Add Players</a></li>
+            <li style="font-size: 20px;"><a href="/myteam">View Team</a></li>
 
           </ul>
         </li>
 
-          <li><a href="/showtour">Tournments</a></li>
+          <li style="font-size: 20px;"><a href="/showtour">Tournments</a></li>
 
       </ul>
      <!-- <form class="navbar-form navbar-left">
@@ -55,7 +75,7 @@
         <button type="submit" class="btn btn-default">Submit</button>
       </form> -->
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">Logout</a></li>
+        <li style="font-size: 30px;"><a href="#">Logout</a></li>
 
       </ul>
     </div><!-- /.navbar-collapse -->

@@ -112,7 +112,42 @@ def home_view(request):
 
                 return render(request,'Manager/adminpage.html',{'tourlist_dict':tourlist_dict, 'team_list_new_dict':team_list_new_dict})
             elif user:
-                return render(request, 'Manager/home.html')
+                tourlist_cursor =connection.cursor()
+                tourlist_cursor.execute("""
+                SELECT DISTINCT Manager_addtournments.id,Manager_addtournments.t_name from Manager_tournmentregistration
+            	LEFT OUTER JOIN Manager_addtournments
+            	on
+            	(Manager_tournmentregistration.tr_name_id=Manager_addtournments.id)
+                """)
+                tourlist_dict = {}
+                tourlist_dict =dictfetchall(tourlist_cursor)
+                print(tourlist_dict)
+
+                # counting number of team registred for each tournment
+                team_count_cursor = connection.cursor()
+                team_count_cursor.execute("""select  Manager_addtournments.id,
+		        Manager_addtournments.t_name,
+		        count(Manager_tournmentregistration.tr_name_id) As count
+                from  Manager_addtournments LEFT OUTER join Manager_tournmentregistration
+                on (Manager_addtournments.id = Manager_tournmentregistration.tr_name_id)
+                GROUP by Manager_addtournments.t_name""")
+                team_list_new_dict = {}
+                team_list_new_dict = dictfetchall(team_count_cursor)
+                print("Team list is")
+                print(team_list_new_dict)
+                print("**** # Now u r time *****")
+                #print(team_list_new_dict[t_name])
+                label =[]
+                for i in range(len(team_list_new_dict)):
+                    label.append(team_list_new_dict[i]['t_name'])
+
+                print(label)
+
+                count = []
+                for i in range(len(team_list_new_dict)):
+                    count.append(team_list_new_dict[i]['count'])
+                print(count)
+                return render(request, 'Manager/home.html',{'tourlist_dict':tourlist_dict, 'team_list_new_dict':team_list_new_dict})
             else:
                 return HttpResponse('Invalid')
 
