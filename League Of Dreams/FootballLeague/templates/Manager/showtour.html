@@ -108,4 +108,20 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3E1D6D', end
 
 </div>
 
+{% block nav_bar_right_items %}
+
+<ul class="nav navbar-nav navbar-right">
+
+      <li class="dropdown">
+       <a style="font-size: 20px;" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{user_obj}} <span class="caret"></span></a>
+       <ul class="dropdown-menu">
+         <li style="font-size: 20px;"><a href="#">Profile</a></li>
+         <li style="font-size: 20px;"><a href="/logout">Logout</a></li>
+       </ul>
+     </li>
+
+    </ul>
+
+{%endblock%}
+
 {%endblock%}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+{% extends 'Manager/indexbase.html'%}
+{%load staticfiles%}
+
+
+
+{% block indexblock%}
+
+<style>
+
+div.container_about{
+color: black;
+/* background-color: #f5f5f5; */
+width: 1000px;
+height: 600px;
+overflow: auto;
+
+margin-left:150px
+
+}
+
+</style>
+<label for="txt1" style="color:white;">Team 1 </label>
+<input type="text" name="txt1" value="">
+<<label for="txt1" style="color:white;">Team 2 </label>
+<input type="text" name="txt2" value="">
+<script>
+  setInterval(function(){
+    name="abvc";
+    $.ajax({
+      type:"GET",
+      url: '/s_live_score',
+      data: {
+        'name':name
+      },
+      success: function(data){
+        obj=JSON.parse(data)
+        alert("{{obj}}")
+
+      }
+
+    });
+
+   }, 3000);
+</script>
+
+{%endblock%}

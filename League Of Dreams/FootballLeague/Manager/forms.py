@@ -95,3 +95,9 @@ class TournmentRegistrationForm(forms.ModelForm):
         labels = {
         "tr_name": "Tournment Name"
         }
+
+
+class LiveScoreForm(forms.ModelForm):
+    class Meta:
+        model = LiveScore
+        fields = ['f_id','team_name','score']

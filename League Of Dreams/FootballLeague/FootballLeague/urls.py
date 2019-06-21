@@ -25,7 +25,7 @@ urlpatterns = [
     url(r'^index', views.index_view),
     url(r'^$', views.load_view),
     url(r'^signup', views.signup_view),
-    url(r'^login', views.login_view),
+    url(r'^login', views.login_view, name="login"),
     url(r'^home', views.home_view),
     url(r'^addteam', views.addteam_view),
     url(r'^addplayer', views.addplayer_view),
@@ -77,6 +77,15 @@ urlpatterns = [
     url(r'^admin_top_gk', views.aja_top_gk),
     url(r'^data', views.get_data),
     url(r'^chartdata', views.ChartData.as_view()),
+    url(r'^logout', views.user_logout),
+    url(r'^add_live_score', views.live_score_admin),
+    #url(r'^lis', views.live_score_form),
+    url(r'^lis/(?P<id>\d+)/$', views.live_score_form_1, name='liv'),
+    url(r'^s_live_score', views.see_live_score),
+
+
+
+
 
 
 

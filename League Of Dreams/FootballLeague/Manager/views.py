@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from Manager.forms import *
 from django.shortcuts import redirect
-from django.contrib.auth import authenticate
-from django.http import HttpResponse
+from django.contrib.auth import authenticate,logout
+from django.http import HttpResponse,HttpResponseRedirect
 from Manager.models import *
 from django.db import connection
 from django.views.generic import ListView,DetailView
@@ -19,6 +19,7 @@ from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 
 
 
@@ -59,9 +60,6 @@ def home_view(request):
         un = request.POST.get('uname')
         pw = request.POST.get('pwd')
         user = authenticate(request, username=un, password=pw)
-
-
-
         if user:
             config.userid = user.id
             user_obj = User.objects.get(id=config.userid)
@@ -147,7 +145,7 @@ def home_view(request):
                 for i in range(len(team_list_new_dict)):
                     count.append(team_list_new_dict[i]['count'])
                 print(count)
-                return render(request, 'Manager/home.html',{'tourlist_dict':tourlist_dict, 'team_list_new_dict':team_list_new_dict})
+                return render(request, 'Manager/home.html',{'tourlist_dict':tourlist_dict, 'team_list_new_dict':team_list_new_dict,'user_obj':user_obj})
             else:
                 return HttpResponse('Invalid')
 
@@ -160,23 +158,25 @@ def home_view(request):
 
 #adding new team
 def addteam_view(request):
+    user_obj = User.objects.get(id=config.userid)
     teamform = AddTeamForm()
     if request.method == 'POST':
         teamform = AddTeamForm(request.POST, request.FILES)
         if teamform.is_valid():
             teamform.save()
             return redirect('/home')
-    return render(request,'Manager/addteam.html',{'teamform':teamform})
+    return render(request,'Manager/addteam.html',{'teamform':teamform,'user_obj':user_obj})
 
 #Adding a player
 def addplayer_view(request):
+    user_obj = User.objects.get(id=config.userid)
     player = AddPlayerForm()
     if request.method == 'POST':
         player = AddPlayerForm(request.POST,request.FILES)
         if player.is_valid():
             player.save()
             return redirect('/home')
-    return render(request,'Manager/addplayer.html',{'player':player})
+    return render(request,'Manager/addplayer.html',{'player':player,'user_obj':user_obj})
 
 
 #load admin page
@@ -217,6 +217,7 @@ def dictfetchall(cursor):
 
 #view team
 def view_team(request):
+    user_obj = User.objects.get(id=config.userid)
     x = (request.session.get('loginid'))
     print(x)
 
@@ -239,7 +240,8 @@ def view_team(request):
     context = {
         'dict': dict
     }
-    return render(request, 'manager/myteam.html', context)
+    # return render(request, 'manager/myteam.html', context)
+    return render(request, 'manager/myteam.html', {'dict': dict, 'user_obj':user_obj})
 
 #To delete Player from list
 def  delete_view(request,id):
@@ -369,7 +371,7 @@ def show_tournments_view(request):
     print(dict)
     print("Nedumbally")
     print(dict1)
-    return render(request,'Manager/showtour.html', {'dict':dict, 'dict1':dict1} )
+    return render(request,'Manager/showtour.html', {'dict':dict, 'dict1':dict1, 'user_obj':user_obj} )
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Second LIfe %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -628,7 +630,8 @@ def fixture_tour_list(request):
     #print(tourlist_dict)
 
     today_fixture_cursor = connection.cursor()
-    today_fixture_cursor.execute("""SELECT Manager_addtournments.t_name,
+    today_fixture_cursor.execute("""SELECT Manager_addfixture_table.id,
+    Manager_addtournments.t_name,
 	Manager_addfixture_table.match_date,
 	Manager_addfixture_table.match_time,
 	Manager_addfixture_table.team_one,
@@ -1251,3 +1254,97 @@ class ChartData(APIView):
             "default":default_items,
         }
         return Response(data)
+
+
+def user_logout(request):
+    if request.method == "GET":
+        print("hi")
+        logout(request)
+        return HttpResponseRedirect(reverse('login'))
+
+#adding live score from admin side
+def live_score_admin(request):
+    print("inside adding fixture from admin side")
+    f_date=datetime.datetime.now()
+    date=f_date.strftime('%Y-%m-%d')
+    s=str(date)
+    print(s)
+    today_fixture_cursor = connection.cursor()
+    today_fixture_cursor.execute("""SELECT Manager_addfixture_table.id,
+    Manager_addtournments.t_name,
+	Manager_addfixture_table.match_date,
+	Manager_addfixture_table.match_time,
+	Manager_addfixture_table.team_one,
+	Manager_addfixture_table.team_two,
+	Manager_addfixture_table.venue
+    from Manager_addtournments left OUTER join Manager_addfixture_table
+    on(Manager_addtournments.id=Manager_addfixture_table.tr_name_id)
+    WHERE Manager_addfixture_table.match_date='%s' """ %(str(s)))
+    today_dict={}
+    today_dict =dictfetchall(today_fixture_cursor)
+    print(today_dict)
+    return render(request,'Manager/admin_live_score.html',{'today_dict':today_dict})
+
+
+
+#live score form
+# def live_score_form(request):
+#     form = LiveScoreForm()
+#     # if request.method=='POST':
+#     #     form = LiveScoreForm(request.POST)
+#     #     if form.is_valid():
+#     #         form.save()
+#             #TournmentRegistration.objects.create(tr_name=trnmnt, team_name= team_obj, is_registred= False)
+#             #return redirect('/admpg')
+#     return render(request,'Manager/show_live_score.html',{'form':form})
+
+
+
+def live_score_form(request):
+    form = LiveScoreForm()
+    if request.method == 'POST':
+        print("inside if")
+        form = LiveScoreForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/home')
+    return render(request,'Manager/show_live_score.html',{'form': form})
+
+
+def live_score_form_1(request, id):
+    if request.method == 'POST':
+        mtch_id = request.POST.get('matchname')
+        tm_name = request.POST.get('teamname')
+        score = request.POST.get('Score')
+
+        print(mtch_id)
+        print(tm_name)
+        print(score)
+
+        mtch_obj = AddFixture_table.objects.get(id=mtch_id)
+        print(mtch_obj)
+        print(type(mtch_obj))
+        tm_obj = AddTeam.objects.get(team_name= tm_name)
+        print(tm_obj)
+        print(type(tm_obj))
+
+        obj = LiveScore.objects.create(f_id = mtch_obj, team_name = tm_obj, score = score)
+        obj.save()
+        return redirect('/add_live_score')
+
+    else:
+        fix = AddFixture_table.objects.filter(id=id)
+        print(fix)
+        form={}
+        return render(request,'Manager/show_live_score.html',{'fix': fix})
+
+
+#see live score from index page
+def see_live_score(request):
+    if request.is_ajax() and request.method=='GET':
+        j=json.dumps('Hello')
+        print('helllolloo')
+        return JsonResponse(j, safe=False)
+        #return JsonResponse
+    else:
+        return render(request,'Manager/index_live_score.html')

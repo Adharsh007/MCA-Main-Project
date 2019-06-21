@@ -139,3 +139,12 @@ class NewKeeper(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+#model for live scorer
+class LiveScore(models.Model):
+    f_id = models.ForeignKey(AddFixture_table,on_delete=models.CASCADE)
+    team_name = team_name = models.ForeignKey(AddTeam, on_delete=models.CASCADE)
+    score = models.IntegerField()
+
+    def __str__(self):
+        return str(self.id)

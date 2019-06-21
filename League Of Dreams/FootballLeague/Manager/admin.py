@@ -45,3 +45,7 @@ admin.site.register(AddGoalKeeperSaves,AddGoalKeeperSavesAdmin)
 class NewKeeperAdmin(admin.ModelAdmin):
     list_display = ['tour_name','matchname','gk_name','saves','team_name']
 admin.site.register(NewKeeper,NewKeeperAdmin)
+
+class LiveScoreAdmin(admin.ModelAdmin):
+    list_display = ['f_id','team_name','score']
+admin.site.register(LiveScore,LiveScoreAdmin)

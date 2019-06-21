@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+{% extends 'Manager/adminbase.html'%}
+
+{%load staticfiles%}
+
+
+<link rel="stylesheet" href="{%static 'css/home.css' %}">
+
+{% load crispy_forms_tags %}
+
+{% block adminblock  %}
+
+<div class="container">
+  <h3>Todays Matches</h3> <br>
+  <form method="POST" id="addSubjectForm"  autocomplete="off" novalidate>
+  {% csrf_token %}
+{%if today_dict%}
+  <table class="table">
+    <thead style="font-size:22px">
+      <th>Tournment Name</th>
+      <th>Time</th>
+      <th>Team 1 </th>
+      <th>Team 2</th>
+      <th>venue</th>
+      <th>Actions</th>
+    </thead>
+    {%for tdy in today_dict%}
+    <tr>
+      <td>{{tdy.t_name}}</td>
+      <td>{{tdy.match_time}}</td>
+      <td>{{tdy.team_one}}</td>
+      <td>{{tdy.team_two}}</td>
+      <td>{{tdy.venue}}</td>
+      <!-- /fixture/{{t.id}} -->
+      <td><a href="{% url 'liv' tdy.id %}" class="btn btn-primary">Select</a></td>
+    </tr>
+    {%endfor%}
+
+  </table>
+
+{%else%}
+  <p>No Matches Today</p>
+{%endif%}
+<div class="" id="editscore">
+
+</div>
+</form>
+</div>
+
+
+
+
+
+
+
+
+{%endblock%}
