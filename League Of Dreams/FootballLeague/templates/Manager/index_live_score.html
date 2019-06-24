@@ -15,34 +15,43 @@ color: black;
 width: 1000px;
 height: 600px;
 overflow: auto;
-
 margin-left:150px
 
 }
 
 </style>
-<label for="txt1" style="color:white;">Team 1 </label>
-<input type="text" name="txt1" value="">
-<<label for="txt1" style="color:white;">Team 2 </label>
-<input type="text" name="txt2" value="">
+<form method="POST" id="liveScoreForm" data-livescore-url="{% url 'ajax_load_livescore' %}" autocomplete="off" novalidate>
+  <div id="id_scorediv" style="margin-left: 574px;
+    margin-top: 126px;">
+{% if today_dict%}
+ <img id="player" src="\media\{{team_one_logo}}" style="height: 100px; width: 100px"><br>
+<label for="txt1" style="color:white;">{{ team_one }} </label><br>
+<label class="btn btn-primary" for="txt1" style="color:white;margin-left:30px;">{{ team_one_count }}</label><br><br><br>
+<img id="player" src="\media\{{team_two_logo}}" style="height: 100px; width: 100px"><br>
+<label for="txt1" style="color:white;">{{ team_two }}</label><br>
+<label class="btn btn-primary" for="txt1" style="color:white;margin-left:30px;">{{ team_two_count }}</label>
+{% else %}
+<label for="txt1" style="color:white;">No Matches Today </label><br>
+{% endif %}
+</form>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
 <script>
   setInterval(function(){
     name="abvc";
+    var url = $("#liveScoreForm").attr("data-livescore-url");
     $.ajax({
-      type:"GET",
-      url: '/s_live_score',
-      data: {
-        'name':name
-      },
-      success: function(data){
-        obj=JSON.parse(data)
-        alert("{{obj}}")
+        url: url,
+        data: {
 
-      }
+        },
+        success: function (data) {
+          $("#id_scorediv").html(data);
+        }
+      });
 
-    });
-
-   }, 3000);
+   }, 2000);
 </script>
 
 {%endblock%}

@@ -28,11 +28,11 @@ class UserProfileForm(forms.ModelForm):
 class AddTeamForm(forms.ModelForm):
     class Meta:
         model = AddTeam
-        fields = ['team_name','username','address','contact_no','team_logo']
+        fields = ['team_name','address','contact_no','team_logo']
 
         labels = {
                     "team_name": "Team Name",
-                    "username": "Manager Name",
+
                     "address": "Address",
                     "contact_no": "Contact Number",
                     "team_logo": "Team Logo"
@@ -42,21 +42,17 @@ class AddTeamForm(forms.ModelForm):
 class AddPlayerForm(forms.ModelForm):
     class Meta:
         model = AddPlayer
-        fields = ['first_name','last_name','team_name','age','contact_no','address','jersy_no','position','upload_photo']
+        fields = ['first_name','last_name','age','contact_no','address','jersy_no','position','upload_photo']
 
         labels = {
-
                 "first_name": "FirstName",
                 "last_name": "LastName",
-                "team_name": "TeamName",
                 "age": "Age",
                 "contact_no": "Contact Number",
                 "address": "Address",
                 "jersy_no": "jersy Number",
                 "position": "Playing Position",
-                "upload_photo" : "Upload Photo"
-
-                }
+                "upload_photo" : "Upload Photo"}
     def __init__(self, *args, **kwargs):
         super(AddPlayerForm, self).__init__(*args, **kwargs)
         self.fields['address'].widget.attrs['rows'] = 5

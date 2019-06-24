@@ -46,7 +46,7 @@
                 <div class="col-sm-3 col-md-5 col-lg-12">
                 <div class="panel panel-default">
                 <div class="panel-body">
-                  <form  method="post" action="/to_fix_table">
+                  <form  method="post" action="/to_fix_table" autocomplete="off">
                     {%csrf_token%}
                     <h2>Add fixture</h2>
                     <div class="form-row">
@@ -93,7 +93,7 @@
 
                                </div>
 
-                                      <div class="form-row">
+                                <div class="form-row">
                                   <div class="form-group col-md-5 mb-0">
         						               <h4>Match Date</h4>
                                   <input type="date" value="" class="form-control" name="fdate">
@@ -142,7 +142,7 @@
 
           var t2 = $('#team2').val();
           if(t1==t2){
-            alert('same');
+            alert('You can not select same team');
             event.preventDefault();
           }
         });

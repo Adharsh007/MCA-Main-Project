@@ -21,6 +21,7 @@ class AddTeam(models.Model):
     contact_no = models.IntegerField()
     team_logo = models.ImageField(upload_to='teams_logo/')
 
+
     def __str__(self):
         return self.team_name
 
@@ -145,6 +146,28 @@ class LiveScore(models.Model):
     f_id = models.ForeignKey(AddFixture_table,on_delete=models.CASCADE)
     team_name = team_name = models.ForeignKey(AddTeam, on_delete=models.CASCADE)
     score = models.IntegerField()
+
+    def __str__(self):
+        return str(self.id)
+
+class Tie(models.Model):
+    tourn_name_id= models.ForeignKey(AddTournments,on_delete=models.CASCADE)
+    m_name= models.ForeignKey(AddFixture_table,on_delete=models.CASCADE)
+    team_one = models.CharField(max_length=20)
+    team_two= models.CharField(max_length=20)
+    team_1_goal = models.IntegerField()
+    team_2_goal = models.IntegerField()
+
+    def __str__(self):
+        return str(self.id)
+
+class Tie(models.Model):
+    tourn_name_id= models.ForeignKey(AddTournments,on_delete=models.CASCADE)
+    m_name= models.ForeignKey(AddFixture_table,on_delete=models.CASCADE)
+    team_one = models.CharField(max_length=20)
+    team_two= models.CharField(max_length=20)
+    team_1_goal = models.IntegerField()
+    team_2_goal = models.IntegerField()
 
     def __str__(self):
         return str(self.id)

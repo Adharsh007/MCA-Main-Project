@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+{% extends 'Manager/homebase.html'%}
+{%load staticfiles%}
+<link rel="stylesheet" href="{%static 'css/home.css' %}">
+
+{% load crispy_forms_tags %}
+
+
+
+{% block homeblock%}
+
+<head>
+
+  <style media="screen">
+
+  .container {
+
+    width: 100%;
+    height: 100%;
+    font-family: 'Open Sans', sans-serif;
+    background: #092756;
+    background: -moz-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%),-moz-linear-gradient(top, rgba(57,173,219,.25) 0%, rgba(42,60,87,.4) 100%), -moz-linear-gradient(-45deg, #670d10 0%, #092756 100%);
+    background: -webkit-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), -webkit-linear-gradient(top, rgba(57,173,219,.25) 0%,rgba(42,60,87,.4) 100%), -webkit-linear-gradient(-45deg, #670d10 0%,#092756 100%);
+    background: -o-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), -o-linear-gradient(top, rgba(57,173,219,.25) 0%,rgba(42,60,87,.4) 100%), -o-linear-gradient(-45deg, #670d10 0%,#092756 100%);
+    background: -ms-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), -ms-linear-gradient(top, rgba(57,173,219,.25) 0%,rgba(42,60,87,.4) 100%), -ms-linear-gradient(-45deg, #670d10 0%,#092756 100%);
+    background: -webkit-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), linear-gradient(to bottom, rgba(57,173,219,.25) 0%,rgba(42,60,87,.4) 100%), linear-gradient(135deg, #670d10 0%,#092756 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3E1D6D', endColorstr='#092756',GradientType=1 );
+
+}
+
+body{
+  background: #092756;
+  background: -moz-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%),-moz-linear-gradient(top, rgba(57,173,219,.25) 0%, rgba(42,60,87,.4) 100%), -moz-linear-gradient(-45deg, #670d10 0%, #092756 100%);
+  background: -webkit-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), -webkit-linear-gradient(top, rgba(57,173,219,.25) 0%,rgba(42,60,87,.4) 100%), -webkit-linear-gradient(-45deg, #670d10 0%,#092756 100%);
+  background: -o-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), -o-linear-gradient(top, rgba(57,173,219,.25) 0%,rgba(42,60,87,.4) 100%), -o-linear-gradient(-45deg, #670d10 0%,#092756 100%);
+  background: -ms-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), -ms-linear-gradient(top, rgba(57,173,219,.25) 0%,rgba(42,60,87,.4) 100%), -ms-linear-gradient(-45deg, #670d10 0%,#092756 100%);
+  background: -webkit-radial-gradient(0% 100%, ellipse cover, rgba(104,128,138,.4) 10%,rgba(138,114,76,0) 40%), linear-gradient(to bottom, rgba(57,173,219,.25) 0%,rgba(42,60,87,.4) 100%), linear-gradient(135deg, #670d10 0%,#092756 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3E1D6D', endColorstr='#092756',GradientType=1 );
+
+}
+
+
+  </style>
+
+</head>
+
+<div class="container">
+  <h1> Update Form</h1>
+  <form method="post">
+    {%csrf_token%}
+    first Name: <input type="text" name="first_name" value="{{player_id.first_name}}"><br>
+    Last Name: <input type="text" name="last_name" value="{{player_id.last_name}}"><br>
+    Age: <input type="text" name="age" value="{{player_id.age}}"><br>
+    Contact Number: <input type="text" name="contact_no" value="{{player_id.contact_no}}"><br>
+    Jersey Number: <input type="text" name="jersy_no" value="{{player_id.jersy_no}}"><br>
+    Position: <input type="text" name="position" value="{{player_id.position}}"><br>
+    <input type="Submit" name="Update Record" value="Update Record" class="btn btn-primary">
+
+  </form>
+</div>
+
+
+
+{%endblock%}
+
+
+    {% block nav_bar_right_items %}
+
+    <ul class="nav navbar-nav navbar-right">
+
+          <li class="dropdown">
+           <a style="font-size: 20px;" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{user_obj}} <span class="caret"></span></a>
+           <ul class="dropdown-menu">
+             <li style="font-size: 20px;"><a href="#">Profile</a></li>
+             <li style="font-size: 20px;"><a href="/logout">Logout</a></li>
+           </ul>
+         </li>
+
+        </ul>
+
+  {%endblock%}

@@ -134,6 +134,7 @@
 
 <h1 style="color:black; margin-left: -100px; color: white;">Select Tournament</h1>
 <select style="width:100px; margin-left: -100px"" class="btn-primary dropdown" id="trr_name">
+  <option value="default">Select</option>
   {% for t in tourlist_dict%}
   <option value="{{t.t_name}}">{{t.t_name}}</option>
   {%endfor%}

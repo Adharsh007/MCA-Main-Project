@@ -74,7 +74,8 @@ body{
             <td> {{d.contact_no}} </td>
             <td>{{d.jersy_no}} </td>
             <td> {{d.position}} </td>
-            <td> <a href="#"> Update &nbsp&nbsp <a href="/delete/{{d.id}}">Delete</a></td>
+            <td> <a href="/delete/{{d.id}}">Delete</a></td>
+            <!-- <a href="/update/{{d.id}}"> Update &nbsp&nbsp -->
 
           </tr>
           {% endfor %}
@@ -86,6 +87,7 @@ body{
 
 
 </div>
+{%endblock%}
 
 
     {% block nav_bar_right_items %}
@@ -95,7 +97,7 @@ body{
           <li class="dropdown">
            <a style="font-size: 20px;" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{user_obj}} <span class="caret"></span></a>
            <ul class="dropdown-menu">
-             <li style="font-size: 20px;"><a href="#">Profile</a></li>
+             
              <li style="font-size: 20px;"><a href="/logout">Logout</a></li>
            </ul>
          </li>
@@ -103,5 +105,3 @@ body{
         </ul>
 
   {%endblock%}
-  
-{%endblock%}

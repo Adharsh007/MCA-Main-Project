@@ -35,14 +35,16 @@ body{
       <th>Team 1 </th>
       <th>Team 2</th>
       <th>venue</th>
+      <th>Status</th>
     </thead>
     {%for f in fixture_dict%}
     <tr>
-      <td style="height:80px;">{{f.match_date}}</td>
+      <td id="m_date" style="height:80px;">{{f.match_date}}</td>
       <td>{{f.match_time}}</td>
       <td>{{f.team_one}}</td>
       <td>{{f.team_two}}</td>
       <td>{{f.venue}}</td>
+      <td>Completed</td>
     </tr>
     {%endfor%}
 

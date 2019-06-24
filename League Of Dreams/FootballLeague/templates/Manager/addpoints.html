@@ -68,11 +68,21 @@
                   </div>
 
                   <div class="form-row">
+                    <h1 style="font-size: 17px; margin-left: 13px">Result Type</h1>
+                    <select style="margin-left: 13px;" title="r_type" class="form-control" id="r_type" name="r_type" value="r_type">
+                           <option value="default">-----------------</option>
+                           <option value="Win">Win</option>
+                           <option value="Tie">Tie</option>
+
+                    </select>
+                  </div>
+
+                  <div class="form-row">
                         <div class="form-group col-md-6 mb-0">
                             <h4> Select Team 1</h4>
                             <select title="Team One" class="form-control" id="team1" name="team1" value="team1">
                                {% for team in team_dict %}
-                                   <option value="{{team.Team1}}">{{team.Team1}}</option>
+                                   <option value="{{team.team_name}}">{{team.team_name}}</option>
                                 {%endfor%}
                             </select>
                           </div>
@@ -81,7 +91,7 @@
                                   <h4> Select Team 2</h4>
                         <select title="Team Two" class="form-control" id="team2" name="team2" value="team2">
                           {% for team in team_dict %}
-                          <option value="{{team.Team2}}">{{team.Team2}}</option>
+                          <option value="{{team.team_name}}">{{team.team_name}}</option>
                           {%endfor%}
                         </select>
 
@@ -164,6 +174,17 @@
           }
         });
       });
+
+      $( "#r_type" ).change(function() {
+		      var n=$("#r_type")[0].selectedIndex;
+		        if(n==2){
+			           $("#t1point").attr( "disabled", "disabled" );
+			              $("#t2point").attr( "disabled", "disabled" );
+		                }else{
+			                   $("#t1point").removeAttr( "disabled", "disabled" );
+			                      $("#t2point").removeAttr( "disabled", "disabled" );
+		                        }
+		            });
     </script>
 
 {%endblock%}

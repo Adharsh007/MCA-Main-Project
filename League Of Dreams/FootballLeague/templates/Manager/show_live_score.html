@@ -59,7 +59,7 @@
                             {%csrf_token%}
                             {{ form|crispy }}
 
-
+                            <h1 style="font-size:12px;">Select Match Name</h1>
                             <select title="Match Name" class="form-control" id="matchname" name="matchname" value="matchname">
                                 <option value="">-------------------</option>
                                     {% for f in fix %}
@@ -67,6 +67,7 @@
                                     {%endfor%}
                             </select>
 <br><br>
+                            <h1 style="font-size:12px;">Select Team Name</h1>
                             <select title="team Name" class="form-control" id="teamname" name="teamname" value="matchname">
                                 <option value="">-------------------</option>
                                     {% for f in fix %}
@@ -75,11 +76,12 @@
                                     {%endfor%}
                             </select>
                             <br>
+                            <h1 style="font-size:12px;">Score</h1>
                             <input type="number" name="Score" />
                             <br>
                             <div class="form-row">
                                   <div class="form-group col-md-12 mb-0">
-                                        <input type="submit" class="btn btn-primary" value="Save">
+                                        <input  style="margin-top:14px;" type="submit" class="btn btn-primary" value="Save">
                                   </div>
                                 </div>
 

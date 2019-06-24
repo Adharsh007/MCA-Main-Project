@@ -158,24 +158,63 @@ def home_view(request):
 
 #adding new team
 def addteam_view(request):
+    print("Inside Add Team")
     user_obj = User.objects.get(id=config.userid)
-    teamform = AddTeamForm()
-    if request.method == 'POST':
-        teamform = AddTeamForm(request.POST, request.FILES)
-        if teamform.is_valid():
-            teamform.save()
-            return redirect('/home')
-    return render(request,'Manager/addteam.html',{'teamform':teamform,'user_obj':user_obj})
+    x =config.userid
+    print(user_obj)
+    print(x)
+    manager_count_cursor = connection.cursor()
+    manager_count_cursor.execute("""
+    select count(auth_user.username) as count,
+	auth_user.username,
+    Manager_addteam.team_name
+	from Manager_addteam LEFT OUTER join auth_user
+	on(auth_user.id=Manager_addteam.username_id)
+	where auth_user.username='%s'
+    """%(user_obj))
+    manager_count_dict = {}
+    manager_count_dict = dictfetchall(manager_count_cursor)
+    print("check")
+    print(manager_count_dict)
+    print(manager_count_dict[0]['count'])
+    c = manager_count_dict[0]['count']
+    d = manager_count_dict[0]['team_name']
+    if c>0 :
+        # return HttpResponse('<h1> You have alreay registred your team </h1>')
+        return render(request, 'Manager/addteam_error.html',{'user_obj':user_obj,'manager_count_dict':manager_count_dict,'d':d})
+    else:
+
+        manager_nm = User.objects.get(id=x)
+        teamform = AddTeamForm()
+        if request.method == 'POST':
+            teamform = AddTeamForm(request.POST, request.FILES)
+            if teamform.is_valid():
+                team=teamform.save(commit=False)
+                team.username=manager_nm
+                team.save()
+                return redirect('/home')
+        return render(request,'Manager/addteam.html',{'teamform':teamform,'user_obj':user_obj})
+
 
 #Adding a player
 def addplayer_view(request):
+    print("Inside Add player")
+
+    print(config.userid)
+    x=config.userid
+    team = AddTeam.objects.get(username=x)
+    print("Team")
+    print(team)
     user_obj = User.objects.get(id=config.userid)
-    player = AddPlayerForm()
+    print(user_obj)
+    player= AddPlayerForm()
     if request.method == 'POST':
         player = AddPlayerForm(request.POST,request.FILES)
         if player.is_valid():
-            player.save()
-            return redirect('/home')
+            pp= player.save(commit=False)
+            pp.team_name= team
+            pp.save()
+            return redirect('/myteam')
     return render(request,'Manager/addplayer.html',{'player':player,'user_obj':user_obj})
 
 
@@ -249,6 +288,15 @@ def  delete_view(request,id):
     player_id.delete()
     return redirect('/myteam')
 
+def  update_view(request,id):
+    player_id = AddPlayer.objects.get(id=id)
+    if request.method == 'POST':
+        form = AddPlayerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/myteam')
+    return render(request,'Manager/updateplayer.html',{'player_id':player_id})
+
 #to make payment for a tournment
 def makepayment_view(request):
     return render(request,'Manager/payment.html')
@@ -321,8 +369,10 @@ def tournmentreg(request, id):
         team_obj = AddTeam.objects.get(username=user_obj)
         trnm_obj = AddTournments.objects.get(id=id)
         TournmentRegistration.objects.create(is_registred = False, team_name = team_obj, tr_name = trnm_obj)
-        print("Insde views.py")
+        print("Insde tournmentregistration page")
+        print(trnm_obj)
         return render(request,'Manager/tournmentregistration.html',{'registerform':registerform})
+        # return render(request,'Manager/tournmentregistration.html',{'trnm_obj':trnm_obj })
 
 def show_tournments_view(request):
     print("Inside show tournment")
@@ -333,8 +383,11 @@ def show_tournments_view(request):
     team_obj = AddTeam.objects.get(username=user_obj)
     x= team_obj.id
     y= user_obj.id
-
     print(team_obj)
+    f_date=datetime.datetime.now()
+    date=f_date.strftime('%Y-%m-%d')
+    s=str(date)
+    print(s)
 
     cursor = connection.cursor()
     cursor1 = connection.cursor()
@@ -349,7 +402,8 @@ def show_tournments_view(request):
        LEFT OUTER JOIN Manager_tournmentregistration
        ON (Manager_addtournments.id = Manager_tournmentregistration.tr_name_id)
        where Manager_addtournments.id not in
-       (SELECT tr_name_id from Manager_tournmentregistration WHERE team_name_id = %d) """%(x))
+       (SELECT tr_name_id from Manager_tournmentregistration WHERE team_name_id = %d)
+		AND Manager_addtournments.s_date> '%s' """%(x,s))
 
     cursor1.execute("""
     select t_name,t_venue,s_date,e_date,r_fee from Manager_addtournments
@@ -470,11 +524,12 @@ def add_points_admin(request, id):
 
     team_cursor = connection.cursor()
     team_cursor.execute("""
-	select DISTINCT ma1.team_name as "Team1", ma2.team_name as "Team2", mat.match_name, mat.match_date, mat.match_time,mat.id
-	from Manager_addfixture_table mat
-	left outer join Manager_addteam ma1 on ma1.team_name = mat.team_one
-	left outer join Manager_addteam ma2 on ma2.team_name = mat.team_two
-	where mat.tr_name_id = %d"""%(int(tour_id.id)))
+	SELECT Manager_addteam.id,
+	       Manager_addteam.team_name
+    from Manager_addteam
+    LEFT OUTER JOIN Manager_tournmentregistration
+    ON (Manager_addteam.id = Manager_tournmentregistration.team_name_id)
+    WHERE Manager_tournmentregistration.tr_name_id=%d"""%(int(tour_id.id)))
     team_dict = {}
     team_dict= dictfetchall(team_cursor)
     print("Inside team names")
@@ -499,30 +554,59 @@ def add_points_admin(request, id):
 #adding values  to point point_table
 def point_table(request):
         if request.method == 'POST':
-            tour_name = request.POST.get('trname')
-            tourn_name_id = AddTournments.objects.get(t_name=tour_name)
-            m_name = request.POST.get('matchname')
-            match_name = AddFixture_table.objects.get(match_name=m_name)
-            team_one = request.POST.get('team1')
-            team_two = request.POST.get('team2')
-            team_1_goal = request.POST.get('t1goals')
-            team_2_goal = request.POST.get('t2goals')
-            winner=request.POST.get('t1point')
-            looser=request.POST.get('t2point')
-            print("inside point table")
-            print(tour_name)
-            print(tourn_name_id)
-            print(m_name)
-            print(team_one)
-            print(team_two)
-            print(team_1_goal)
-            print(team_2_goal)
+            result = request.POST.get('r_type')
+            print(result)
+            if result == 'Win':
+                tour_name = request.POST.get('trname')
+                tourn_name_id = AddTournments.objects.get(t_name=tour_name)
+                m_name = request.POST.get('matchname')
+                match_name = AddFixture_table.objects.get(match_name=m_name)
+                team_one = request.POST.get('team1')
+                team_two = request.POST.get('team2')
+                team_1_goal = request.POST.get('t1goals')
+                team_2_goal = request.POST.get('t2goals')
+                winner=request.POST.get('t1point')
+                looser=request.POST.get('t2point')
+                print("inside point table")
+                print(tour_name)
+                print(tourn_name_id)
+                print(m_name)
+                print(team_one)
+                print(team_two)
+                print(team_1_goal)
+                print(team_2_goal)
 
+                ob= AddPoints.objects.create(tourn_name_id=tourn_name_id ,m_name=match_name ,team_one=team_one,
+                team_two=team_two,team_1_goal=team_1_goal,team_2_goal=team_2_goal,winner=winner,looser=looser)
+                ob.save()
 
-            ob= AddPoints.objects.create(tourn_name_id=tourn_name_id ,m_name=match_name ,team_one=team_one,
-            team_two=team_two,team_1_goal=team_1_goal,team_2_goal=team_2_goal,winner=winner,looser=looser)
-            ob.save()
-            return redirect("/point_tourlist")
+                live_scr_del_cursor = connection.cursor()
+                live_scr_del_cursor.execute("""delete from Manager_livescore""")
+                return redirect("/point_tourlist")
+            else:
+                print("Print tie")
+                tour_name = request.POST.get('trname')
+                tourn_name_id = AddTournments.objects.get(t_name=tour_name)
+                m_name = request.POST.get('matchname')
+                match_name = AddFixture_table.objects.get(match_name=m_name)
+                team_one = request.POST.get('team1')
+                team_two = request.POST.get('team2')
+                team_1_goal = request.POST.get('t1goals')
+                team_2_goal = request.POST.get('t2goals')
+                print(tour_name)
+                print(tourn_name_id)
+                print(m_name)
+                print(match_name)
+                print(team_one)
+                print(team_two)
+                print(team_1_goal)
+                print(team_2_goal)
+
+                obj= Tie.objects.create(tourn_name_id=tourn_name_id ,m_name=match_name ,team_one=team_one,
+                team_two=team_two,team_1_goal=team_1_goal,team_2_goal=team_2_goal)
+                obj.save()
+                return redirect("/point_tourlist")
+
 
 
 #view shows list of available tournmets while click on standings tab from index page
@@ -538,6 +622,79 @@ def standing_tour_list(request):
     tourlist_dict =dictfetchall(tourlist_cursor)
     print(tourlist_dict)
     return render(request,'Manager/standings_tour_list.html',{'tourlist_dict':tourlist_dict})
+
+#View for showing standing list
+# def standing_list(request,id):
+#     tour_id = AddTournments.objects.get(id=id)
+#     print("Name of the tournmet is")
+#     print(type(tour_id))
+#     print(tour_id)
+#     #to find all the teams in clicked tournment
+#     team_list=connection.cursor()
+#     team_list.execute("""
+#     SELECT Manager_addteam.id, Manager_addteam.team_name
+#     FROM Manager_addteam
+#     LEFT OUTER JOIN Manager_tournmentregistration
+#     on (Manager_addteam.id= Manager_tournmentregistration.team_name_id)
+#     where Manager_tournmentregistration.tr_name_id=%s"""%(int(tour_id.id)))
+#     team_list_dict = {}
+#     team_list_dict =dictfetchall(team_list)
+#     print("Teams playing in the tournments")
+#     print(type(team_list_dict))
+#     print(team_list_dict)
+#     # find the number of matches played by each team
+#     temp_store=[]
+#
+#     for i in team_list_dict:
+#         #print(i['team_name'])
+#         s=str(i['team_name'])
+#         teambycount = connection.cursor()
+#         teambycount.execute(""" select (select count(*) as c from Manager_addpoints where team_one = '%s')
+#         +
+#         (select count(*) as c from Manager_addpoints where team_two = '%s'
+#         and Manager_addpoints.tourn_name_id_id=%d) as "no_of_matches",
+#         (select count(*) as c from Manager_addpoints where
+#         Manager_addpoints.winner ='%s' and Manager_addpoints.tourn_name_id_id=%d)
+#         as wincount,
+#         (select count(*) as c from Manager_addpoints where
+#         Manager_addpoints.looser ='%s' and Manager_addpoints.tourn_name_id_id=%d)
+#         as losscount,
+#         (select (select count(*) as c from Manager_tie where team_one = '%s')
+#         +
+#         (select count(*) as c from Manager_tie where team_two = '%s' and Manager_tie.tourn_name_id_id=30))
+#         As tie,
+#         (select count(*)*3 as d  from Manager_addpoints where
+#         Manager_addpoints.winner ='%s' and Manager_addpoints.tourn_name_id_id=%d)
+#         as point
+#         """%(s, s, int(tour_id.id), s ,int(tour_id.id) , s , int(tour_id.id),s, s, s, int(tour_id.id)))
+#
+#
+#
+#         a=[]
+#
+#         a=dictfetchall(teambycount)
+#
+#
+#         #print("****" + str(a[0]['totcount']))
+#         samp = {
+#         'team_name': s,
+#         'Matches': int(a[0]['no_of_matches']),
+#         'wins': int(a[0]['wincount']),
+#         'loss': int(a[0]['losscount']),
+#         'tie': int(a[0]['tie']),
+#         'Points': int(a[0]['point']),
+#
+# }
+#
+#         temp_store.append(samp)
+#
+#
+#
+#
+#     print("*** Welcome to the Point table ********")
+#     print(type(temp_store))
+#     print(temp_store)
+#     return render(request,'Manager/team_standings.html',{'temp_store':temp_store,'tour_id':tour_id})
 
 #View for showing standing list
 def standing_list(request,id):
@@ -575,30 +732,52 @@ def standing_list(request,id):
         (select count(*) as c from Manager_addpoints where
         Manager_addpoints.looser ='%s' and Manager_addpoints.tourn_name_id_id=%d)
         as losscount,
+        (select (select count(*) as c from Manager_tie where team_one = '%s')
+        +
+        (select count(*) as c from Manager_tie where team_two = '%s' and Manager_tie.tourn_name_id_id=%d))
+        As tie,
         (select count(*)*3 as d  from Manager_addpoints where
         Manager_addpoints.winner ='%s' and Manager_addpoints.tourn_name_id_id=%d)
-        as point
-        """%(s, s, int(tour_id.id), s ,int(tour_id.id) , s , int(tour_id.id), s, int(tour_id.id)))
+        as point,
+        (select(select (select count(*) as c from Manager_tie where team_one = '%s')
+        +
+        (select count(*) as c from Manager_tie where team_two = '%s' and Manager_tie.tourn_name_id_id =%d))*1)
+        as tie_point
+        """%(s, s, int(tour_id.id), s ,int(tour_id.id) , s , int(tour_id.id),s, s,int(tour_id.id), s, int(tour_id.id), s, s, int(tour_id.id)))
 
 
 
         a=[]
 
         a=dictfetchall(teambycount)
+        print("************************************************")
+        print(a)
 
 
         #print("****" + str(a[0]['totcount']))
         samp = {
         'team_name': s,
-        'Matches': int(a[0]['no_of_matches']),
+        'Matches': int(a[0]['no_of_matches']+ a[0]['tie_point']),
         'wins': int(a[0]['wincount']),
         'loss': int(a[0]['losscount']),
-        'Points': int(a[0]['point'])
+        'tie': int(a[0]['tie']),
+        'Points': int(a[0]['point'] + a[0]['tie_point'])
 
 
         }
 
         temp_store.append(samp)
+
+    tie_count_cursor=connection.cursor()
+    tie_count_cursor.execute("""
+    select Manager_tie.team_one,
+    count(Manager_tie.team_one) As count1
+    from Manager_tie
+    WHERE Manager_tie.team_one='%s'"""%(s))
+    tie_list_dict = {}
+    tie_list_dict =dictfetchall(tie_count_cursor)
+    print("Inside tie")
+    print(tie_list_dict )
 
 
 
@@ -606,6 +785,7 @@ def standing_list(request,id):
     print(type(temp_store))
     print(temp_store)
     return render(request,'Manager/team_standings.html',{'temp_store':temp_store,'tour_id':tour_id})
+
 
 #view shows list of available tournmets while click on fixture tab from index page
 def fixture_tour_list(request):
@@ -987,13 +1167,14 @@ def top_goals_list(request, id):
     print(tour_id)
     goal_cursor = connection.cursor()
     goal_cursor.execute("""
-    select Manager_addgoalsandassist.Scorer_name as "Player",count(*) as "Goals" , Manager_addteam.team_name as "Team"
+    select upper(Manager_addgoalsandassist.Scorer_name) as "Player",count(*) as "Goals" , Manager_addteam.team_name as "Team"
     from Manager_addgoalsandassist
     LEFT OUTER JOIN Manager_addteam
     on(Manager_addgoalsandassist.team_name_id=Manager_addteam.id)
     where Manager_addgoalsandassist.tour_name_id=%d
-    GROUP by Manager_addgoalsandassist.Scorer_name
-    ORDER By Goals DESC""" %(int(tour_id.id)))
+    GROUP by Player
+    ORDER By Goals DESC
+    """ %(int(tour_id.id)))
 
     top_goal_dict = {}
     top_goal_dict = dictfetchall(goal_cursor)
@@ -1021,12 +1202,13 @@ def top_gk_list(request, id):
     print(tour_id)
     gk_cursor = connection.cursor()
     gk_cursor.execute("""
-    select Manager_addgoalkeepersaves.gk_names,sum(saves) as "Saves" , Manager_addteam.team_name
+    select upper(Manager_addgoalkeepersaves.gk_names) As Player,sum(saves) as "Saves" , Manager_addteam.team_name
     from Manager_addgoalkeepersaves
 	left OUTER JOIN Manager_addteam
 	on(Manager_addgoalkeepersaves.team_name_id=Manager_addteam.id)
     where Manager_addgoalkeepersaves.tour_name_id=%d
-    GROUP by Manager_addgoalkeepersaves.gk_names""" %(int(tour_id.id)))
+    GROUP by Player
+    ORDER by saves DESC""" %(int(tour_id.id)))
     top_gk_dict = {}
     top_gk_dict = dictfetchall(gk_cursor)
     print(top_gk_dict)
@@ -1055,12 +1237,12 @@ def top_assist_list(request, id):
     print(tour_id)
     assist_cursor = connection.cursor()
     assist_cursor.execute("""
-    select Manager_addgoalsandassist.assist_name as "Player",count(*) as "Assists" , Manager_addteam.team_name as "Team"
+    select upper(Manager_addgoalsandassist.assist_name) as "Player",count(*) as "Assists" , Manager_addteam.team_name as "Team"
     from Manager_addgoalsandassist
     LEFT OUTER JOIN Manager_addteam
     on(Manager_addgoalsandassist.team_name_id=Manager_addteam.id)
     where Manager_addgoalsandassist.tour_name_id=%d and Player is NOT 'NULL'
-    GROUP by Manager_addgoalsandassist.assist_name
+    GROUP by Player
     ORDER By Assists DESC """ %(int(tour_id.id)))
     top_assist_dict = {}
     top_assist_dict = dictfetchall(assist_cursor)
@@ -1300,15 +1482,15 @@ def live_score_admin(request):
 
 
 
-def live_score_form(request):
-    form = LiveScoreForm()
-    if request.method == 'POST':
-        print("inside if")
-        form = LiveScoreForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('/home')
-    return render(request,'Manager/show_live_score.html',{'form': form})
+# def live_score_form(request):
+#     form = LiveScoreForm()
+#     if request.method == 'POST':
+#         print("inside if")
+#         form = LiveScoreForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('/home')
+#     return render(request,'Manager/show_live_score.html',{'form': form})
 
 
 def live_score_form_1(request, id):
@@ -1340,11 +1522,137 @@ def live_score_form_1(request, id):
 
 
 #see live score from index page
+# def see_live_score(request):
+#     if request.is_ajax() and request.method=='GET':
+#         j=json.dumps('Hello')
+#         print('helllolloo')
+#         return JsonResponse(j, safe=False)
+#         #return JsonResponse
+#     else:
+#         return render(request,'Manager/index_live_score.html')
+
+
 def see_live_score(request):
-    if request.is_ajax() and request.method=='GET':
-        j=json.dumps('Hello')
-        print('helllolloo')
-        return JsonResponse(j, safe=False)
-        #return JsonResponse
+    print("Inside ajaxsubjectlist")
+
+
+    f_date=datetime.datetime.now()
+    date=f_date.strftime('%Y-%m-%d')
+    print(date)
+    s=str(date)
+
+    today_fixture_cursor = connection.cursor()
+    today_fixture_cursor.execute("""SELECT Manager_addfixture_table.id,
+        Manager_addtournments.t_name,
+        Manager_addfixture_table.match_date,
+        Manager_addfixture_table.match_time,
+        Manager_addfixture_table.team_one,
+        Manager_addfixture_table.team_two,
+        Manager_addfixture_table.venue
+        from Manager_addtournments left OUTER join Manager_addfixture_table
+        on(Manager_addtournments.id=Manager_addfixture_table.tr_name_id)
+        WHERE Manager_addfixture_table.match_date='%s' """ %(str(s)))
+
+    today_dict={}
+    today_dict =dictfetchall(today_fixture_cursor)
+
+    if len(today_dict) > 0:
+        team_one = str(today_dict[0]['team_one'])
+        team_two = str(today_dict[0]['team_two'])
+
+        team_one_obj =  AddTeam.objects.get(team_name= team_one)
+        team_two_obj =  AddTeam.objects.get(team_name= team_two)
+
+        team_one_id = int(team_one_obj.id)
+        team_one_logo = str(team_one_obj.team_logo)
+        team_two_id = int(team_two_obj.id)
+        team_two_logo = str(team_two_obj.team_logo)
+
+        team_one_cursor = connection.cursor()
+        team_one_cursor.execute("""select count(*) as tot_count from Manager_livescore
+                                where team_name_id = '%d'""" % (team_one_id))
+        team_one_dict = {}
+        team_one_dict = dictfetchall(team_one_cursor)
+        team_one_count = team_one_dict[0]['tot_count']
+
+        team_two_cursor = connection.cursor()
+        team_two_cursor.execute("""select count(*) as tot_count from Manager_livescore
+                                where team_name_id = '%d'""" % (team_two_id))
+        team_two_dict = {}
+        team_two_dict = dictfetchall(team_two_cursor)
+        team_two_count = team_two_dict[0]['tot_count']
     else:
-        return render(request,'Manager/index_live_score.html')
+        team_one = ""
+        team_two = ""
+        team_one_count = 0
+        team_two_count = 0
+
+    return render(request,'Manager/index_live_score.html', {'team_one': team_one,
+        'today_dict': today_dict,
+        'team_two': team_two,
+        'team_one_count': team_one_count,
+        'team_two_count': team_two_count,
+        'team_one_logo': team_one_logo,
+        'team_two_logo': team_two_logo})
+
+def ajax_live_score(request):
+    print("inside livescore ajax")
+
+    f_date=datetime.datetime.now()
+    date=f_date.strftime('%Y-%m-%d')
+    print(date)
+    s=str(date)
+
+    today_fixture_cursor = connection.cursor()
+    today_fixture_cursor.execute("""SELECT Manager_addfixture_table.id,
+        Manager_addtournments.t_name,
+        Manager_addfixture_table.match_date,
+        Manager_addfixture_table.match_time,
+        Manager_addfixture_table.team_one,
+        Manager_addfixture_table.team_two,
+        Manager_addfixture_table.venue
+        from Manager_addtournments left OUTER join Manager_addfixture_table
+        on(Manager_addtournments.id=Manager_addfixture_table.tr_name_id)
+        WHERE Manager_addfixture_table.match_date='%s' """ %(str(s)))
+
+    today_dict={}
+    today_dict =dictfetchall(today_fixture_cursor)
+
+    if len(today_dict) > 0:
+        team_one = str(today_dict[0]['team_one'])
+        team_two = str(today_dict[0]['team_two'])
+
+        team_one_obj =  AddTeam.objects.get(team_name= team_one)
+        team_two_obj =  AddTeam.objects.get(team_name= team_two)
+
+        team_one_id = int(team_one_obj.id)
+        team_one_logo = str(team_one_obj.team_logo)
+        team_two_id = int(team_two_obj.id)
+        team_two_logo = str(team_two_obj.team_logo)
+
+        team_one_cursor = connection.cursor()
+        team_one_cursor.execute("""select count(*) as tot_count from Manager_livescore
+                                where team_name_id = '%d'""" % (team_one_id))
+        team_one_dict = {}
+        team_one_dict = dictfetchall(team_one_cursor)
+        team_one_count = team_one_dict[0]['tot_count']
+
+        team_two_cursor = connection.cursor()
+        team_two_cursor.execute("""select count(*) as tot_count from Manager_livescore
+                                where team_name_id = '%d'""" % (team_two_id))
+        team_two_dict = {}
+        team_two_dict = dictfetchall(team_two_cursor)
+        team_two_count = team_two_dict[0]['tot_count']
+    else:
+        team_one = ""
+        team_two = ""
+        team_one_count = 0
+        team_two_count = 0
+
+    return render(request, 'Manager/ajax_load_livscore.html', {'team_one': team_one,
+        'today_dict': today_dict,
+        'team_two': team_two,
+        'team_one_count': team_one_count,
+        'team_two_count': team_two_count,
+        'team_one_logo': team_one_logo,
+        'team_two_logo': team_two_logo})

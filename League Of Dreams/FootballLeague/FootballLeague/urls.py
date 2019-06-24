@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/$', views.NewsDetail.as_view()),
     url(r'^myteam', views.view_team),
     url(r'^delete/(?P<id>\d+)/$', views.delete_view),
+    url(r'^update/(?P<id>\d+)/$', views.update_view),
     url(r'^payment', views.makepayment_view),
     url(r'^listclub', views.ClubListView.as_view()),
     url(r'^player-list/(?P<id>\d+)/$', views.playerlist_view),
@@ -82,6 +83,8 @@ urlpatterns = [
     #url(r'^lis', views.live_score_form),
     url(r'^lis/(?P<id>\d+)/$', views.live_score_form_1, name='liv'),
     url(r'^s_live_score', views.see_live_score),
+    url(r'^ajax/load-livescore', views.ajax_live_score, name= 'ajax_load_livescore'),
+    
 
 
 

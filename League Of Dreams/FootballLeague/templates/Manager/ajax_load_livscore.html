@@ -1,0 +1,10 @@
+{% if today_dict%}
+ <img id="player" src="\media\{{team_one_logo}}" style="height: 100px; width: 100px"><br>
+<label for="txt1" style="color:white;">{{ team_one }} </label><br>
+<label class="btn btn-primary" for="txt1" style="color:white; margin-left:30px;">{{ team_one_count }}</label><br><br><br>
+<img id="player" src="\media\{{team_two_logo}}" style="height: 100px; width: 100px"><br>
+<label for="txt1" style="color:white;">{{ team_two }}</label><br>
+<label class="btn btn-primary" for="txt1" style="color:white;margin-left:30px;">{{ team_two_count }}</label>
+{% else %}
+<label for="txt1" style="color:white;">No Matches Today </label><br>
+{% endif %}
